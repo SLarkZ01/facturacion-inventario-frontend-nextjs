@@ -4,9 +4,8 @@ import { BatteryLow } from "lucide-react";
 const homepage = () => {
   return (
     <main>
-      <div className="flex justify-center items-center h-screen">
-        <Button variant="destructive" size="lg" className="rounded-full"
-        ><BatteryLow/>Click Me</Button>
+      <div className="">
+        
       </div>
     </main>
   )
