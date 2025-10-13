@@ -15,13 +15,14 @@ import {
 import { Button } from "./ui/button";
 import { use } from "react";
 import { useTheme } from "next-themes";
+import { SidebarTrigger } from "./ui/sidebar";
 
 const Navbar = () => {
     const{theme, setTheme}= useTheme();
     return (
         <nav className="flex items-center justify-between">
             {/*izquierda*/}
-            collapseButton
+            <SidebarTrigger/>
             {/*derecha*/}
             <div className="flex items-center space-x-4">
                 <Link href="/">Dashboard</Link>
