@@ -1,8 +1,9 @@
 "use client"
 
 import { LogOut, Moon, Settings, SquareMenu, Sun, User } from "lucide-react";
+import { logout } from "@/lib/clientAuth"
 import Link from "next/link";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import {
     DropdownMenu,
@@ -12,10 +13,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Button } from "./ui/button";
+import { Button } from "./button";
 import { use } from "react";
 import { useTheme } from "next-themes";
-import { SidebarTrigger } from "./ui/sidebar";
+import { SidebarTrigger } from "./sidebar";
 
 const Navbar = () => {
     const{theme, setTheme}= useTheme();
@@ -25,7 +26,7 @@ const Navbar = () => {
             <SidebarTrigger/>
             {/*derecha*/}
             <div className="flex items-center space-x-4">
-                <Link href="/">Dashboard</Link>
+                <Link href="/">Panel</Link>
                 {/*modo oscuro menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -35,15 +36,15 @@ const Navbar = () => {
                             <span className="sr-only">Toggle theme</span>
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => setTheme("light")}>
-                            Light
+                            Claro
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setTheme("dark")}>
-                            Dark
+                            Oscuro
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setTheme("system")}>
-                            System
+                            Sistema
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -67,7 +68,7 @@ const Navbar = () => {
                             <Settings className="h-[1.2rem] w-[1.2rem] mr-2 " />
                             configuracion
                         </DropdownMenuItem>
-                        <DropdownMenuItem variant="destructive">
+                        <DropdownMenuItem variant="destructive" onClick={() => logout()}>
                             <LogOut className="h-[1.2rem] w-[1.2rem] mr-2 "/>
                             cerrar sesion
                         </DropdownMenuItem>

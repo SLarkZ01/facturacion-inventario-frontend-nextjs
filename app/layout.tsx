@@ -3,7 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import App from "next/app";
 import AppSidebar from "@/components/ui/AppSidebar";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/ui/Navbar";
+import ShowUnlessRoot from "@/components/ui/ShowUnlessRoot"
 import { ThemeProvider } from "@/components/providers/Themeprovider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
@@ -31,6 +32,7 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies()
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
+  const authCookie = cookieStore.get("auth")?.value ?? null
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -42,12 +44,25 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange>
           <SidebarProvider defaultOpen={defaultOpen}>
-            <AppSidebar />
-
-            <main className="w-full">
-              <Navbar />
-              <div className="px-4">{children}</div>
-            </main>
+            {/* Server-side check: only render sidebar/navbar when auth cookie exists */}
+            {authCookie ? (
+              <>
+                <ShowUnlessRoot>
+                  <AppSidebar />
+                </ShowUnlessRoot>
+                <main className="w-full">
+                  <ShowUnlessRoot>
+                    <Navbar />
+                  </ShowUnlessRoot>
+                  <div className="px-4">{children}</div>
+                </main>
+              </>
+            ) : (
+              // no auth cookie: render children full width (login page)
+              <main className="w-full">
+                <div className="px-4">{children}</div>
+              </main>
+            )}
           </SidebarProvider>
         </ThemeProvider>
       </body>

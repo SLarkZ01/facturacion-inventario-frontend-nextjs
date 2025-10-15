@@ -4,33 +4,35 @@ import Link from "next/link";
 import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { DropdownMenuItem } from "./dropdown-menu";
+import { logout } from "@/lib/clientAuth"
+import SidebarUserMenu from "./SidebarUserMenu"
 import { Collapsible } from "@radix-ui/react-collapsible";
 import { CollapsibleContent, CollapsibleTrigger } from "./collapsible";
 import { it } from "node:test";
 
 const items = [
     {
-        title: "Home",
+        title: "Inicio",
         url: "#",
         icon: Home,
     },
     {
-        title: "Inbox",
+        title: "Bandeja",
         url: "#",
         icon: Inbox,
     },
     {
-        title: "Calendar",
+        title: "Calendario",
         url: "#",
         icon: Calendar,
     },
     {
-        title: "Search",
+        title: "Buscar",
         url: "#",
         icon: Search,
     },
     {
-        title: "Settings",
+        title: "Configuración",
         url: "#",
         icon: Settings,
     },
@@ -42,9 +44,9 @@ const AppSidebar = () => {
             <SidebarHeader className="py-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
+                            <SidebarMenuButton asChild>
                             <Link href="/">
-                                <Image src="/logo.svg" alt="Logo" width={32} height={32} />
+                                <Image src="/images/logo-placeholder.svg" alt="Logo" width={32} height={32} />
                                 <span>lama dev</span>
                             </Link>
                         </SidebarMenuButton>
@@ -113,50 +115,12 @@ const AppSidebar = () => {
                     </SidebarGroup>
                 </Collapsible>
                 {/** añadir */}
-                <SidebarGroup>
-                        <SidebarGroupLabel>añadir</SidebarGroupLabel>
-                        {/** Collapsible ocultar contenido */}
-                            <SidebarGroupContent>
-                                <SidebarMenu>
-                                    <SidebarMenuItem>
-                                        <SidebarMenuButton asChild>
-                                            <Link href="/#">
-                                                <Projector />
-                                        ver todos los proyectos
-                                    </Link>
-                                </SidebarMenuButton>
-                                <SidebarMenuSub>
-                                    <SidebarMenuSubItem>
-                                        <SidebarMenuSubButton asChild>
-                                            <Link href="/#">
-                                                <Plus />
-                                                añadir proyectos
-                                            </Link>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                </SidebarMenuSub>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                    </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <SidebarMenuButton>
-                                        <User2 /> john doe <ChevronUp className="ml-auto" />
-                                    </SidebarMenuButton>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                                    <DropdownMenuItem>Logout</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </SidebarMenuButton>
+                        {/* SidebarUserMenu is a client component that handles logout */}
+                        <SidebarUserMenu />
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
