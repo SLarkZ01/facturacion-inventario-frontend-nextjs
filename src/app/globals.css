@@ -124,3 +124,34 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Toast animations */
+@keyframes toast-in {
+  from {
+    transform: translateY(-8px) translateX(8px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-out {
+  from {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-8px) translateX(8px) scale(0.98);
+    opacity: 0;
+  }
+}
+
+.toast-enter {
+  animation: toast-in 280ms cubic-bezier(.2,.8,.2,1);
+}
+.toast-exit {
+  animation: toast-out 180ms cubic-bezier(.2,.8,.2,1);
+}
+

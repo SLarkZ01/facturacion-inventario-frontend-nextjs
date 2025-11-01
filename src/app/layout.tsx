@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { ToastProvider } from "@/components/ui/toast/ToastProvider";
  
 
 const geistSans = Geist({
@@ -35,10 +36,12 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* Root layout: only providers and global styles.
-              Specific page chrome (sidebar, navbar) should live in nested layouts
-              so public/auth pages can avoid the dashboard chrome. */}
-          {children}
+          <ToastProvider>
+            {/* Root layout: only providers and global styles.
+                Specific page chrome (sidebar, navbar) should live in nested layouts
+                so public/auth pages can avoid the dashboard chrome. */}
+            {children}
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>
