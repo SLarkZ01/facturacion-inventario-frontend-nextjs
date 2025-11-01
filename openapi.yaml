@@ -338,7 +338,7 @@ paths:
       - Talleres
       summary: Crear invitación por código
       description: 'Genera un código de invitación para que usuarios puedan unirse
-        a un taller. Roles disponibles: VENDEDOR, ADMIN, MECANICO.'
+        a un taller. Roles disponibles: VENDEDOR, ADMIN.'
       operationId: crearInvitacionCodigo
       parameters:
       - name: tallerId
@@ -1171,43 +1171,6 @@ paths:
                   email: user@gmail.com
         '400':
           description: Token de Google inválido
-  /api/auth/oauth/facebook:
-    post:
-      tags:
-      - Auth
-      summary: OAuth Facebook
-      description: Autenticación/registro usando Facebook OAuth. Requiere el accessToken
-        obtenido del flujo OAuth de Facebook.
-      operationId: oauthFacebook
-      requestBody:
-        description: Token de Facebook y datos opcionales
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties:
-                type: string
-            examples:
-              Login con Facebook:
-                description: Login con Facebook
-                value:
-                  accessToken: EAABwzLixnjYBO7ZC9bZB...
-                  inviteCode: TALLER-ABC123
-                  device: ios
-        required: true
-      responses:
-        '200':
-          description: OAuth exitoso
-          content:
-            application/json:
-              example:
-                accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-                refreshToken: r1234567890
-                user:
-                  id: 507f1f77bcf86cd799439011
-                  email: user@fb.com
-        '400':
-          description: Token de Facebook inválido
   /api/auth/logout:
     post:
       tags:

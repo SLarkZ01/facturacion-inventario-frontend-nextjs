@@ -33,10 +33,6 @@ export interface LogoutRequest {
     requestBody: { [key: string]: string; };
 }
 
-export interface OauthFacebookRequest {
-    requestBody: { [key: string]: string; };
-}
-
 export interface OauthGoogleRequest {
     requestBody: { [key: string]: string; };
 }
@@ -177,51 +173,6 @@ export class AuthApi extends runtime.BaseAPI {
      */
     async me(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.meRaw(initOverrides);
-    }
-
-    /**
-     * Autenticación/registro usando Facebook OAuth. Requiere el accessToken obtenido del flujo OAuth de Facebook.
-     * OAuth Facebook
-     */
-    async oauthFacebookRaw(requestParameters: OauthFacebookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['requestBody'] == null) {
-            throw new runtime.RequiredError(
-                'requestBody',
-                'Required parameter "requestBody" was null or undefined when calling oauthFacebook().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("bearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/api/auth/oauth/facebook`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['requestBody'],
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Autenticación/registro usando Facebook OAuth. Requiere el accessToken obtenido del flujo OAuth de Facebook.
-     * OAuth Facebook
-     */
-    async oauthFacebook(requestParameters: OauthFacebookRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.oauthFacebookRaw(requestParameters, initOverrides);
     }
 
     /**
