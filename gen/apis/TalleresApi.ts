@@ -136,7 +136,7 @@ export class TalleresApi extends runtime.BaseAPI {
     }
 
     /**
-     * Genera un código de invitación para que usuarios puedan unirse a un taller. Roles disponibles: VENDEDOR, ADMIN, MECANICO.
+     * Genera un código de invitación para que usuarios puedan unirse a un taller. Roles disponibles: VENDEDOR, ADMIN.
      * Crear invitación por código
      */
     async crearInvitacionCodigoRaw(requestParameters: CrearInvitacionCodigoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -180,7 +180,7 @@ export class TalleresApi extends runtime.BaseAPI {
     }
 
     /**
-     * Genera un código de invitación para que usuarios puedan unirse a un taller. Roles disponibles: VENDEDOR, ADMIN, MECANICO.
+     * Genera un código de invitación para que usuarios puedan unirse a un taller. Roles disponibles: VENDEDOR, ADMIN.
      * Crear invitación por código
      */
     async crearInvitacionCodigo(requestParameters: CrearInvitacionCodigoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
