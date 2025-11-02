@@ -59,11 +59,12 @@
   --secondary: #232F3E; /* SecondaryColor */
   --secondary-foreground: #FFFFFF; /* OnSecondary */
   --muted: #F7F7F7;
-  --muted-foreground: #6B6B6B;
+  --muted-foreground: #686868;
   --accent: #00A896; /* Accent */
   --accent-foreground: #FFFFFF;
   --destructive: #D32F2F;
-  --border: #E6E6E6;
+  /* Make borders slightly stronger for better visibility */
+  --border: #a8a8a8;
   --input: #FFFFFF;
   --ring: #FF9900;
   --chart-1: #FFB74D;

@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast/ToastProvider";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -29,6 +30,7 @@ type LoginValues = z.infer<typeof LoginSchema>;
 export default function LoginForm() {
   const router = useRouter();
   const { push } = useToast();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -49,20 +51,30 @@ export default function LoginForm() {
       });
 
       if (!res.ok) {
-        let message = "Error al iniciar sesión";
+        // Mostrar mensaje inline en vez de un toast para errores de login
         try {
           const json = await res.json();
-          message = json?.message || message;
-        } catch {}
-  push({ title: "Error", description: message, variant: "error" });
+          if (res.status === 401) {
+            // Mensaje pedido: exactamente "contraseña incorreta"
+            setErrorMessage("contraseña incorreta");
+          } else if (json?.message) {
+            setErrorMessage(String(json.message));
+          } else {
+            setErrorMessage("Error al iniciar sesión");
+          }
+        } catch {
+          setErrorMessage("Error al iniciar sesión");
+        }
         return;
       }
 
-      // On success redirect to dashboard
-  push({ title: "Bienvenido", description: "Sesión iniciada correctamente", variant: "success" });
+      // On success: clear inline error, show toast and redirect to dashboard
+      setErrorMessage(null);
+      push({ title: "Bienvenido", description: "Sesión iniciada correctamente", variant: "success" });
       router.push("/");
     } catch {
-  push({ title: "Error", description: "Error en el servidor", variant: "error" });
+      // Mostrar error inline en caso de fallo de red/servidor
+      setErrorMessage("Error en el servidor");
     }
   }
 
@@ -78,10 +90,10 @@ export default function LoginForm() {
         </CardAction>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" aria-busy={isSubmitting}>
           <div className="grid gap-2">
             <Label htmlFor="usernameOrEmail">Usuario o correo</Label>
-            <Input id="usernameOrEmail" type="text" {...register("usernameOrEmail")} />
+            <Input id="usernameOrEmail" type="text" {...register("usernameOrEmail")} disabled={isSubmitting} />
             {errors.usernameOrEmail && (
               <p className="text-sm text-destructive">{errors.usernameOrEmail.message}</p>
             )}
@@ -95,9 +107,12 @@ export default function LoginForm() {
               >
               </a>
             </div>
-            <Input id="password" type="password" {...register("password")} />
+            <Input id="password" type="password" {...register("password")} onInput={() => setErrorMessage(null)} disabled={isSubmitting} />
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password.message}</p>
+            )}
+            {errorMessage && (
+              <p className="text-sm text-destructive">{errorMessage}</p>
             )}
           </div>
         </form>
@@ -108,7 +123,20 @@ export default function LoginForm() {
             onClick={handleSubmit(onSubmit)}
             className="w-full"
             disabled={isSubmitting}
+            aria-busy={isSubmitting}
           >
+            {isSubmitting && (
+              <svg
+                className="animate-spin h-4 w-4 mr-2"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity="0.25" />
+                <path d="M22 12a10 10 0 00-10-10" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+              </svg>
+            )}
             Iniciar sesión
           </Button>
         </div>
