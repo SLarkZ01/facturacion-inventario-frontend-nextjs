@@ -30,12 +30,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider>
           <ToastProvider>
             {/* Root layout: only providers and global styles.
                 Specific page chrome (sidebar, navbar) should live in nested layouts

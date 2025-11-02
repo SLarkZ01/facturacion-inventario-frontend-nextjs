@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -46,75 +44,45 @@
 
 :root {
   --radius: 0.625rem;
-  /* Slightly reduce absolute white to make the UI less glaring */
-  --background: oklch(0.985 0.008 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(0.99 0.006 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(0.99 0.006 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0.004 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --custom-color: oklch(0.6 0.2 150);
+  /* Enforce light color scheme for browsers */
+  color-scheme: light;
+  /* Paleta sincronizada con la app Android (blanco + naranja) */
+  --background: #F7F7F7; /* BackgroundLight */
+  --foreground: #111111; /* OnBackground / texto */
+  --card: #FFFFFF; /* CardColor */
+  --card-foreground: #111111; /* OnSurface */
+  --popover: #FFFFFF;
+  --popover-foreground: #111111;
+  --primary: #FF9900; /* PrimaryColor (naranja) */
+  --primary-foreground: #FFFFFF; /* OnPrimary */
+  --primary-variant: #F57C00; /* PrimaryVariant */
+  --secondary: #232F3E; /* SecondaryColor */
+  --secondary-foreground: #FFFFFF; /* OnSecondary */
+  --muted: #F7F7F7;
+  --muted-foreground: #6B6B6B;
+  --accent: #00A896; /* Accent */
+  --accent-foreground: #FFFFFF;
+  --destructive: #D32F2F;
+  --border: #E6E6E6;
+  --input: #FFFFFF;
+  --ring: #FF9900;
+  --chart-1: #FFB74D;
+  --chart-2: #FF7043;
+  --chart-3: #4DB6AC;
+  --chart-4: #FFA726;
+  --chart-5: #FF8A65;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #111111;
+  --sidebar-primary: #FF9900;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #00A896;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #E6E6E6;
+  --sidebar-ring: #FF9900;
+  --custom-color: #00A896;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-  --custom-color: oklch(0.6 0.2 150);
-}
+/* dark mode rules removed — app is light-only */
 
 @layer base {
   * {
