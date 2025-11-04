@@ -43,6 +43,8 @@ export interface Listar2Request {
     q?: string;
     page?: number;
     size?: number;
+    tallerId?: string;
+    global?: boolean;
 }
 
 /**
@@ -226,7 +228,7 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Busca categorías por nombre. Si no se proporciona \'q\', devuelve lista vacía.
+     * Busca categorías por nombre o lista categorías globales o por taller.
      * Buscar/listar categorías
      */
     async listar2Raw(requestParameters: Listar2Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -242,6 +244,14 @@ export class CategoriasApi extends runtime.BaseAPI {
 
         if (requestParameters['size'] != null) {
             queryParameters['size'] = requestParameters['size'];
+        }
+
+        if (requestParameters['tallerId'] != null) {
+            queryParameters['tallerId'] = requestParameters['tallerId'];
+        }
+
+        if (requestParameters['global'] != null) {
+            queryParameters['global'] = requestParameters['global'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -265,7 +275,7 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Busca categorías por nombre. Si no se proporciona \'q\', devuelve lista vacía.
+     * Busca categorías por nombre o lista categorías globales o por taller.
      * Buscar/listar categorías
      */
     async listar2(requestParameters: Listar2Request = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {

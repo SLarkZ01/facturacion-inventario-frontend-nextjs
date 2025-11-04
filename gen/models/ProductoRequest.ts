@@ -73,6 +73,12 @@ export interface ProductoRequest {
      * @memberof ProductoRequest
      */
     specs?: { [key: string]: string; };
+    /**
+     * 
+     * @type {string}
+     * @memberof ProductoRequest
+     */
+    tallerId?: string;
 }
 
 /**
@@ -102,6 +108,7 @@ export function ProductoRequestFromJSONTyped(json: any, ignoreDiscriminator: boo
         'imagenRecurso': json['imagenRecurso'] == null ? undefined : json['imagenRecurso'],
         'listaMedios': json['listaMedios'] == null ? undefined : json['listaMedios'],
         'specs': json['specs'] == null ? undefined : json['specs'],
+        'tallerId': json['tallerId'] == null ? undefined : json['tallerId'],
     };
 }
 
@@ -120,6 +127,7 @@ export function ProductoRequestToJSON(value?: ProductoRequest | null): any {
         'imagenRecurso': value['imagenRecurso'],
         'listaMedios': value['listaMedios'],
         'specs': value['specs'],
+        'tallerId': value['tallerId'],
     };
 }
 

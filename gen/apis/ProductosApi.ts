@@ -47,6 +47,7 @@ export interface GetProductoRequest {
 export interface ListarRequest {
     q?: string;
     categoriaId?: string;
+    tallerId?: string;
     page?: number;
     size?: number;
 }
@@ -302,6 +303,10 @@ export class ProductosApi extends runtime.BaseAPI {
 
         if (requestParameters['categoriaId'] != null) {
             queryParameters['categoriaId'] = requestParameters['categoriaId'];
+        }
+
+        if (requestParameters['tallerId'] != null) {
+            queryParameters['tallerId'] = requestParameters['tallerId'];
         }
 
         if (requestParameters['page'] != null) {
