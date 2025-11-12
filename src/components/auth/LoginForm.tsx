@@ -6,6 +6,7 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast/ToastProvider";
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -37,6 +38,8 @@ export default function LoginForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>({ resolver: zodResolver(LoginSchema) });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   async function onSubmit(values: LoginValues) {
     // Minimal example: call a login API route. Replace with real auth.
@@ -107,7 +110,25 @@ export default function LoginForm() {
               >
               </a>
             </div>
-            <Input id="password" type="password" {...register("password")} onInput={() => setErrorMessage(null)} disabled={isSubmitting} />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+                onInput={() => setErrorMessage(null)}
+                disabled={isSubmitting}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                aria-pressed={showPassword}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                onClick={() => setShowPassword((s) => !s)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
