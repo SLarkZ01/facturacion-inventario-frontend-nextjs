@@ -14,9 +14,30 @@
 
 
 import * as runtime from '../runtime';
+import type {
+  AlmacenRequest,
+  TallerRequest,
+} from '../models/index';
+import {
+    AlmacenRequestFromJSON,
+    AlmacenRequestToJSON,
+    TallerRequestFromJSON,
+    TallerRequestToJSON,
+} from '../models/index';
 
 export interface AcceptInvitacionRequest {
     requestBody: { [key: string]: string; };
+}
+
+export interface ActualizarAlmacenRequest {
+    tallerId: string;
+    almacenId: string;
+    almacenRequest: AlmacenRequest;
+}
+
+export interface ActualizarTallerRequest {
+    tallerId: string;
+    tallerRequest: TallerRequest;
 }
 
 export interface CrearAlmacenRequest {
@@ -30,7 +51,29 @@ export interface CrearInvitacionCodigoRequest {
 }
 
 export interface CrearTallerRequest {
-    requestBody: { [key: string]: string; };
+    tallerRequest: TallerRequest;
+}
+
+export interface EliminarAlmacenRequest {
+    tallerId: string;
+    almacenId: string;
+}
+
+export interface EliminarTallerRequest {
+    tallerId: string;
+}
+
+export interface GetAlmacenRequest {
+    tallerId: string;
+    almacenId: string;
+}
+
+export interface GetTallerRequest {
+    tallerId: string;
+}
+
+export interface ListarAlmacenesRequest {
+    tallerId: string;
 }
 
 /**
@@ -81,6 +124,117 @@ export class TalleresApi extends runtime.BaseAPI {
      */
     async acceptInvitacion(requestParameters: AcceptInvitacionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.acceptInvitacionRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Actualiza un almacén (nombre/ubicacion). Requiere owner o ADMIN.
+     * Actualizar almacén
+     */
+    async actualizarAlmacenRaw(requestParameters: ActualizarAlmacenRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['tallerId'] == null) {
+            throw new runtime.RequiredError(
+                'tallerId',
+                'Required parameter "tallerId" was null or undefined when calling actualizarAlmacen().'
+            );
+        }
+
+        if (requestParameters['almacenId'] == null) {
+            throw new runtime.RequiredError(
+                'almacenId',
+                'Required parameter "almacenId" was null or undefined when calling actualizarAlmacen().'
+            );
+        }
+
+        if (requestParameters['almacenRequest'] == null) {
+            throw new runtime.RequiredError(
+                'almacenRequest',
+                'Required parameter "almacenRequest" was null or undefined when calling actualizarAlmacen().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/talleres/{tallerId}/almacenes/{almacenId}`.replace(`{${"tallerId"}}`, encodeURIComponent(String(requestParameters['tallerId']))).replace(`{${"almacenId"}}`, encodeURIComponent(String(requestParameters['almacenId']))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: AlmacenRequestToJSON(requestParameters['almacenRequest']),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Actualiza un almacén (nombre/ubicacion). Requiere owner o ADMIN.
+     * Actualizar almacén
+     */
+    async actualizarAlmacen(requestParameters: ActualizarAlmacenRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.actualizarAlmacenRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Actualiza datos del taller (solo nombre por ahora)
+     * Actualizar taller
+     */
+    async actualizarTallerRaw(requestParameters: ActualizarTallerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['tallerId'] == null) {
+            throw new runtime.RequiredError(
+                'tallerId',
+                'Required parameter "tallerId" was null or undefined when calling actualizarTaller().'
+            );
+        }
+
+        if (requestParameters['tallerRequest'] == null) {
+            throw new runtime.RequiredError(
+                'tallerRequest',
+                'Required parameter "tallerRequest" was null or undefined when calling actualizarTaller().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/talleres/{tallerId}`.replace(`{${"tallerId"}}`, encodeURIComponent(String(requestParameters['tallerId']))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: TallerRequestToJSON(requestParameters['tallerRequest']),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Actualiza datos del taller (solo nombre por ahora)
+     * Actualizar taller
+     */
+    async actualizarTaller(requestParameters: ActualizarTallerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.actualizarTallerRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -192,10 +346,10 @@ export class TalleresApi extends runtime.BaseAPI {
      * Crear taller
      */
     async crearTallerRaw(requestParameters: CrearTallerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['requestBody'] == null) {
+        if (requestParameters['tallerRequest'] == null) {
             throw new runtime.RequiredError(
-                'requestBody',
-                'Required parameter "requestBody" was null or undefined when calling crearTaller().'
+                'tallerRequest',
+                'Required parameter "tallerRequest" was null or undefined when calling crearTaller().'
             );
         }
 
@@ -218,7 +372,7 @@ export class TalleresApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters['requestBody'],
+            body: TallerRequestToJSON(requestParameters['tallerRequest']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -230,6 +384,188 @@ export class TalleresApi extends runtime.BaseAPI {
      */
     async crearTaller(requestParameters: CrearTallerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.crearTallerRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Marca un almacén como inactivo. Requiere owner o ADMIN.
+     * Eliminar (desactivar) almacén
+     */
+    async eliminarAlmacenRaw(requestParameters: EliminarAlmacenRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['tallerId'] == null) {
+            throw new runtime.RequiredError(
+                'tallerId',
+                'Required parameter "tallerId" was null or undefined when calling eliminarAlmacen().'
+            );
+        }
+
+        if (requestParameters['almacenId'] == null) {
+            throw new runtime.RequiredError(
+                'almacenId',
+                'Required parameter "almacenId" was null or undefined when calling eliminarAlmacen().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/talleres/{tallerId}/almacenes/{almacenId}`.replace(`{${"tallerId"}}`, encodeURIComponent(String(requestParameters['tallerId']))).replace(`{${"almacenId"}}`, encodeURIComponent(String(requestParameters['almacenId']))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Marca un almacén como inactivo. Requiere owner o ADMIN.
+     * Eliminar (desactivar) almacén
+     */
+    async eliminarAlmacen(requestParameters: EliminarAlmacenRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.eliminarAlmacenRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Marca el taller como inactivo. Solo el owner puede hacerlo.
+     * Eliminar (desactivar) taller
+     */
+    async eliminarTallerRaw(requestParameters: EliminarTallerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['tallerId'] == null) {
+            throw new runtime.RequiredError(
+                'tallerId',
+                'Required parameter "tallerId" was null or undefined when calling eliminarTaller().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/talleres/{tallerId}`.replace(`{${"tallerId"}}`, encodeURIComponent(String(requestParameters['tallerId']))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Marca el taller como inactivo. Solo el owner puede hacerlo.
+     * Eliminar (desactivar) taller
+     */
+    async eliminarTaller(requestParameters: EliminarTallerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.eliminarTallerRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Obtiene un almacén por id
+     * Obtener almacén
+     */
+    async getAlmacenRaw(requestParameters: GetAlmacenRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['tallerId'] == null) {
+            throw new runtime.RequiredError(
+                'tallerId',
+                'Required parameter "tallerId" was null or undefined when calling getAlmacen().'
+            );
+        }
+
+        if (requestParameters['almacenId'] == null) {
+            throw new runtime.RequiredError(
+                'almacenId',
+                'Required parameter "almacenId" was null or undefined when calling getAlmacen().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/talleres/{tallerId}/almacenes/{almacenId}`.replace(`{${"tallerId"}}`, encodeURIComponent(String(requestParameters['tallerId']))).replace(`{${"almacenId"}}`, encodeURIComponent(String(requestParameters['almacenId']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Obtiene un almacén por id
+     * Obtener almacén
+     */
+    async getAlmacen(requestParameters: GetAlmacenRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.getAlmacenRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Obtiene información del taller por id
+     * Obtener taller
+     */
+    async getTallerRaw(requestParameters: GetTallerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['tallerId'] == null) {
+            throw new runtime.RequiredError(
+                'tallerId',
+                'Required parameter "tallerId" was null or undefined when calling getTaller().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/talleres/{tallerId}`.replace(`{${"tallerId"}}`, encodeURIComponent(String(requestParameters['tallerId']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Obtiene información del taller por id
+     * Obtener taller
+     */
+    async getTaller(requestParameters: GetTallerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.getTallerRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -265,6 +601,48 @@ export class TalleresApi extends runtime.BaseAPI {
      */
     async listMyTalleres(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.listMyTalleresRaw(initOverrides);
+    }
+
+    /**
+     * Devuelve los almacenes asociados a un taller
+     * Listar almacenes de un taller
+     */
+    async listarAlmacenesRaw(requestParameters: ListarAlmacenesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['tallerId'] == null) {
+            throw new runtime.RequiredError(
+                'tallerId',
+                'Required parameter "tallerId" was null or undefined when calling listarAlmacenes().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/talleres/{tallerId}/almacenes`.replace(`{${"tallerId"}}`, encodeURIComponent(String(requestParameters['tallerId']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Devuelve los almacenes asociados a un taller
+     * Listar almacenes de un taller
+     */
+    async listarAlmacenes(requestParameters: ListarAlmacenesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.listarAlmacenesRaw(requestParameters, initOverrides);
     }
 
 }

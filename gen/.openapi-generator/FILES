@@ -12,6 +12,7 @@ apis/TallerMiembrosApi.ts
 apis/TalleresApi.ts
 apis/index.ts
 index.ts
+models/AlmacenRequest.ts
 models/CarritoItemRequest.ts
 models/CarritoRequest.ts
 models/CategoriaRequest.ts
@@ -23,5 +24,6 @@ models/LoginRequest.ts
 models/MovimientoRequest.ts
 models/ProductoRequest.ts
 models/RegisterRequest.ts
+models/TallerRequest.ts
 models/index.ts
 runtime.ts
