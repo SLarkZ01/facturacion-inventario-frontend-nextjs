@@ -17,9 +17,10 @@ import { SidebarTrigger } from "./ui/sidebar";
 type Props = {
   userName?: string | null;
   avatarSrc?: string | null;
+  showSidebarTrigger?: boolean;
 };
 
-const Navbar = ({ userName, avatarSrc }: Props) => {
+const Navbar = ({ userName, avatarSrc, showSidebarTrigger = true }: Props) => {
   const [me, setMe] = useState<any | null>(null);
 
   useEffect(() => {
@@ -50,7 +51,8 @@ const Navbar = ({ userName, avatarSrc }: Props) => {
   return (
     <nav className="p-4 flex items-center justify-between sticky top-0 bg-white border-b z-10">
       {/* LEFT */}
-      <SidebarTrigger />
+      {showSidebarTrigger && <SidebarTrigger />}
+      {!showSidebarTrigger && <div className="text-lg font-semibold">Panel de Administración</div>}
       {/* <Button variant="outline" onClick={toggleSidebar}>
         Custom Button
       </Button> */}

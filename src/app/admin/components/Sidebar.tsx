@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Home, Grid, Box, Tag, Users, FileText, Settings, ArrowLeft, User2 } from "lucide-react";
+import { Home, Grid, Box, Tag, Users, FileText, Settings, ArrowLeft } from "lucide-react";
 
 type User = { nombre?: string; name?: string; username?: string; email?: string; correo?: string };
 
@@ -16,31 +15,13 @@ const items = [
   { id: "configuracion", label: "Configuración", href: "/admin/configuracion", icon: Settings },
 ];
 
-export default function Sidebar({ collapsed }: { collapsed?: boolean } = {}) {
+type SidebarProps = {
+  collapsed?: boolean;
+  user?: User | null;
+};
+
+export default function Sidebar({ collapsed, user }: SidebarProps) {
   const pathname = usePathname();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-    // obtener info del usuario (proxy en server)
-    fetch("/api/auth/me")
-      .then((res) => {
-        if (!res.ok) return null;
-        return res.json();
-      })
-      .then((data) => {
-        if (!mounted || !data) return;
-        const u = data?.user || data?.usuario || data || null;
-        setUser(u);
-      })
-      .catch(() => {
-        /* ignore */
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const displayName = user?.nombre || user?.name || user?.username || "Administrador";
   const displayEmail = user?.email || user?.correo || "admin@example.com";

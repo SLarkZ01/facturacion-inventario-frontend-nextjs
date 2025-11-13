@@ -71,10 +71,10 @@ export default function LoginForm() {
         return;
       }
 
-      // On success: clear inline error, show toast and redirect to dashboard
+      // On success: clear inline error, show toast and redirect to admin dashboard
       setErrorMessage(null);
       push({ title: "Bienvenido", description: "Sesión iniciada correctamente", variant: "success" });
-      router.push("/");
+      router.push("/admin");
     } catch {
       // Mostrar error inline en caso de fallo de red/servidor
       setErrorMessage("Error en el servidor");

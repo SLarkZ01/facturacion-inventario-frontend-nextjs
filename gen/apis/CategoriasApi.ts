@@ -45,6 +45,7 @@ export interface Listar2Request {
     size?: number;
     tallerId?: string;
     global?: boolean;
+    todas?: boolean;
 }
 
 /**
@@ -252,6 +253,10 @@ export class CategoriasApi extends runtime.BaseAPI {
 
         if (requestParameters['global'] != null) {
             queryParameters['global'] = requestParameters['global'];
+        }
+
+        if (requestParameters['todas'] != null) {
+            queryParameters['todas'] = requestParameters['todas'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

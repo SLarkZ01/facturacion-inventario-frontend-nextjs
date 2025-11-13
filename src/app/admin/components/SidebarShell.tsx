@@ -4,7 +4,13 @@ import { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function SidebarShell() {
+type User = { nombre?: string; name?: string; username?: string; email?: string; correo?: string };
+
+type SidebarShellProps = {
+  user?: User | null;
+};
+
+export default function SidebarShell({ user }: SidebarShellProps) {
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -41,7 +47,7 @@ export default function SidebarShell() {
         </div>
 
         <div className="flex-1 overflow-auto">
-          <Sidebar collapsed={collapsed} />
+          <Sidebar collapsed={collapsed} user={user} />
         </div>
       </div>
     </aside>
