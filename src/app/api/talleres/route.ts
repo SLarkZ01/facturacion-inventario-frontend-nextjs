@@ -16,8 +16,21 @@ export async function GET() {
     }
 
     const result = await listarMisTalleresService(access);
-    return NextResponse.json(result.body, { status: result.status });
-  } catch {
+    
+    console.log("Resultado del backend:", result);
+    
+    // Si el status no es 200, devolver un array vacío o el error
+    if (result.status !== 200) {
+      console.error("Error del backend:", result.status, result.body);
+      return NextResponse.json(result.body, { status: result.status });
+    }
+    
+    // Asegurar que siempre devolvamos un array
+    const talleres = Array.isArray(result.body) ? result.body : [];
+    console.log("Talleres a devolver:", talleres);
+    return NextResponse.json(talleres, { status: 200 });
+  } catch (error) {
+    console.error("Error en GET /api/talleres:", error);
     return NextResponse.json({ message: "Error en servidor" }, { status: 500 });
   }
 }

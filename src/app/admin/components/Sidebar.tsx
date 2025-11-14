@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Grid, Box, Tag, Users, FileText, Settings, ArrowLeft } from "lucide-react";
+import { Home, Grid, Box, Tag, Users, FileText, Settings, ArrowLeft, Warehouse } from "lucide-react";
 
 type User = { nombre?: string; name?: string; username?: string; email?: string; correo?: string };
 
 const items = [
-  { id: "dashboard", label: "Administración", href: "/admin", icon: Home },
+  { id: "dashboard", label: "Administración", href: "/admin/dashboard", icon: Home },
   { id: "productos", label: "Productos", href: "/admin/productos", icon: Box },
   { id: "categorias", label: "Categorías", href: "/admin/categorias", icon: Tag },
+  { id: "talleres", label: "Talleres", href: "/admin/talleres", icon: Warehouse },
   { id: "clientes", label: "Clientes", href: "/admin/clientes", icon: Users },
   { id: "facturas", label: "Facturas", href: "/admin/facturas", icon: FileText },
   { id: "configuracion", label: "Configuración", href: "/admin/configuracion", icon: Settings },
@@ -56,7 +57,7 @@ export default function Sidebar({ collapsed, user }: SidebarProps) {
 
           {items.map((it) => {
             const Icon = it.icon;
-            const active = pathname === it.href || (it.href !== "/admin" && pathname?.startsWith(it.href || ""));
+            const active = pathname === it.href || (it.href !== "/admin/dashboard" && pathname?.startsWith(it.href || ""));
             return (
               <li key={it.id}>
                 <Link
