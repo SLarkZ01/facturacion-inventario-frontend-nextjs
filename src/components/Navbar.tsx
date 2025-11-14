@@ -18,9 +18,10 @@ type Props = {
   userName?: string | null;
   avatarSrc?: string | null;
   showSidebarTrigger?: boolean;
+  isAdminLayout?: boolean;
 };
 
-const Navbar = ({ userName, avatarSrc, showSidebarTrigger = true }: Props) => {
+const Navbar = ({ userName, avatarSrc, showSidebarTrigger = true, isAdminLayout = false }: Props) => {
   const [me, setMe] = useState<any | null>(null);
 
   useEffect(() => {
@@ -47,6 +48,45 @@ const Navbar = ({ userName, avatarSrc, showSidebarTrigger = true }: Props) => {
   }
 
   const admin = isAdminUser(me);
+
+  // Si está en el layout de admin, solo mostrar el menú de usuario sin el contenedor completo
+  if (isAdminLayout) {
+    return (
+      <div className="flex items-center gap-4">
+        {/* USER MENU */}
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <div className="flex items-center gap-3">
+              <Avatar className="h-8 w-8">
+                {avatarSrc ? <AvatarImage src={avatarSrc} /> : <AvatarImage src="https://avatars.githubusercontent.com/u/1486366" />}
+                <AvatarFallback className="text-xs">{userName ? userName.charAt(0).toUpperCase() : "CN"}</AvatarFallback>
+              </Avatar>
+              {userName && <span className="hidden sm:inline-block text-sm text-gray-800">{userName}</span>}
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent sideOffset={10}>
+            <DropdownMenuLabel>{userName ? `Hola, ${userName}` : "Mi cuenta"}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <User className="h-[1.2rem] w-[1.2rem] mr-2" />
+              Perfil
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Settings className="h-[1.2rem] w-[1.2rem] mr-2" />
+              Configuración
+            </DropdownMenuItem>
+            <DropdownMenuItem variant="destructive" onClick={async () => {
+              await fetch('/api/auth/logout', { method: 'POST' });
+              location.href = '/';
+            }}>
+              <LogOut className="h-[1.2rem] w-[1.2rem] mr-2" />
+              Cerrar sesión
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  }
 
   return (
     <nav className="p-4 flex items-center justify-between sticky top-0 bg-white border-b z-10">

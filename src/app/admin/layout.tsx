@@ -53,18 +53,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <SidebarProvider>
       <AppSidebar user={userData as any} />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbPage>Panel de Administración</BreadcrumbPage>
+                <BreadcrumbPage className="font-semibold">Panel de Administración</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="ml-auto flex items-center gap-2">
-            <Navbar userName={userName} showSidebarTrigger={false} />
+          <div className="ml-auto">
+            <Navbar userName={userName} showSidebarTrigger={false} isAdminLayout={true} />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
