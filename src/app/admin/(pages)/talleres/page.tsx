@@ -31,6 +31,9 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Pencil, Trash2, Warehouse, Building2 } from "lucide-react";
 import { toast } from "sonner";
+import Loader from "@/components/ui/loading";
+import DeleteButton from "@/components/ui/delete";
+import EditButton from "@/components/ui/edit";
 
 interface Taller {
   id: number;
@@ -304,8 +307,8 @@ export default function TalleresPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <p>Cargando...</p>
+      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+        <Loader />
       </div>
     );
   }
@@ -360,21 +363,15 @@ export default function TalleresPage() {
                       <TableCell>{taller.id}</TableCell>
                       <TableCell className="font-medium">{taller.nombre}</TableCell>
                       <TableCell>{taller.descripcion || "-"}</TableCell>
-                      <TableCell className="text-right space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openTallerDialog(taller)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openDeleteDialog("taller", taller.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <div onClick={() => openTallerDialog(taller)}>
+                            <EditButton />
+                          </div>
+                          <div onClick={() => openDeleteDialog("taller", taller.id)}>
+                            <DeleteButton />
+                          </div>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
@@ -420,23 +417,17 @@ export default function TalleresPage() {
                       <TableCell>
                         {talleres.find((t) => t.id === almacen.tallerId)?.nombre || "-"}
                       </TableCell>
-                      <TableCell className="text-right space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openAlmacenDialog(almacen)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() =>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <div onClick={() => openAlmacenDialog(almacen)}>
+                            <EditButton />
+                          </div>
+                          <div onClick={() =>
                             openDeleteDialog("almacen", almacen.id, almacen.tallerId)
-                          }
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                          }>
+                            <DeleteButton />
+                          </div>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
