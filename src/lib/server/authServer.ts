@@ -6,7 +6,7 @@
  * SOLID (una responsabilidad: hablar con el backend para auth).
  */
 
-const BACKEND_BASE = process.env.BACKEND_BASE_URL || "http://localhost:8080";
+import { BACKEND_BASE } from "@/lib/config";
 
 type LoginPayload = {
   usernameOrEmail: string;

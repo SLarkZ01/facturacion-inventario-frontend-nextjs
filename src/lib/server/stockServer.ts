@@ -4,7 +4,7 @@
  * Actúa como adaptador entre la app y el backend.
  */
 
-const BACKEND_BASE = process.env.BACKEND_BASE_URL || "http://localhost:8080";
+import { BACKEND_BASE } from "@/lib/config";
 
 type AjustarStockPayload = {
   productoId: string;
