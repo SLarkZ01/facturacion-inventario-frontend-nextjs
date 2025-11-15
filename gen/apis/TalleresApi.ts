@@ -54,6 +54,10 @@ export interface CrearTallerRequest {
     tallerRequest: TallerRequest;
 }
 
+export interface DebugListByUserRequest {
+    userId?: string;
+}
+
 export interface EliminarAlmacenRequest {
     tallerId: string;
     almacenId: string;
@@ -73,6 +77,10 @@ export interface GetTallerRequest {
 }
 
 export interface ListarAlmacenesRequest {
+    tallerId: string;
+}
+
+export interface ListarMiembrosRequest {
     tallerId: string;
 }
 
@@ -387,8 +395,47 @@ export class TalleresApi extends runtime.BaseAPI {
     }
 
     /**
-     * Marca un almacén como inactivo. Requiere owner o ADMIN.
-     * Eliminar (desactivar) almacén
+     * Endpoint temporal para depuración: pasar ?userId=<id> para simular autenticación y devolver talleres para ese userId. Eliminar/proteger en producción.
+     * DEBUG: listar talleres por userId (temporal)
+     */
+    async debugListByUserRaw(requestParameters: DebugListByUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['userId'] != null) {
+            queryParameters['userId'] = requestParameters['userId'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/talleres/_debug`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Endpoint temporal para depuración: pasar ?userId=<id> para simular autenticación y devolver talleres para ese userId. Eliminar/proteger en producción.
+     * DEBUG: listar talleres por userId (temporal)
+     */
+    async debugListByUser(requestParameters: DebugListByUserRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.debugListByUserRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Elimina permanentemente un almacén. Requiere owner o ADMIN. Esta acción no se puede deshacer.
+     * Eliminar almacén
      */
     async eliminarAlmacenRaw(requestParameters: EliminarAlmacenRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['tallerId'] == null) {
@@ -428,16 +475,16 @@ export class TalleresApi extends runtime.BaseAPI {
     }
 
     /**
-     * Marca un almacén como inactivo. Requiere owner o ADMIN.
-     * Eliminar (desactivar) almacén
+     * Elimina permanentemente un almacén. Requiere owner o ADMIN. Esta acción no se puede deshacer.
+     * Eliminar almacén
      */
     async eliminarAlmacen(requestParameters: EliminarAlmacenRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.eliminarAlmacenRaw(requestParameters, initOverrides);
     }
 
     /**
-     * Marca el taller como inactivo. Solo el owner puede hacerlo.
-     * Eliminar (desactivar) taller
+     * Elimina permanentemente el taller y todos sus almacenes asociados. Solo el owner puede hacerlo. Esta acción no se puede deshacer.
+     * Eliminar taller
      */
     async eliminarTallerRaw(requestParameters: EliminarTallerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['tallerId'] == null) {
@@ -470,8 +517,8 @@ export class TalleresApi extends runtime.BaseAPI {
     }
 
     /**
-     * Marca el taller como inactivo. Solo el owner puede hacerlo.
-     * Eliminar (desactivar) taller
+     * Elimina permanentemente el taller y todos sus almacenes asociados. Solo el owner puede hacerlo. Esta acción no se puede deshacer.
+     * Eliminar taller
      */
     async eliminarTaller(requestParameters: EliminarTallerRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.eliminarTallerRaw(requestParameters, initOverrides);
@@ -643,6 +690,48 @@ export class TalleresApi extends runtime.BaseAPI {
      */
     async listarAlmacenes(requestParameters: ListarAlmacenesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.listarAlmacenesRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Devuelve los miembros de un taller (userId, roles, joinedAt). Requiere que el usuario autenticado pertenezca al taller.
+     * Listar miembros del taller
+     */
+    async listarMiembrosRaw(requestParameters: ListarMiembrosRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['tallerId'] == null) {
+            throw new runtime.RequiredError(
+                'tallerId',
+                'Required parameter "tallerId" was null or undefined when calling listarMiembros().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/talleres/{tallerId}/miembros`.replace(`{${"tallerId"}}`, encodeURIComponent(String(requestParameters['tallerId']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Devuelve los miembros de un taller (userId, roles, joinedAt). Requiere que el usuario autenticado pertenezca al taller.
+     * Listar miembros del taller
+     */
+    async listarMiembros(requestParameters: ListarMiembrosRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.listarMiembrosRaw(requestParameters, initOverrides);
     }
 
 }
