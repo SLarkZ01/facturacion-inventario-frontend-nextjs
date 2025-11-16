@@ -4,311 +4,146 @@ import styled from 'styled-components';
 const Loader = () => {
   return (
     <StyledWrapper>
-      <svg aria-label="loader being flipped clockwise and circled by three white curves fading in and out" role="img" height="56px" width="56px" viewBox="0 0 56 56" className="loader">
-        <clipPath id="sand-mound-top">
-          <path d="M 14.613 13.087 C 15.814 12.059 19.3 8.039 20.3 6.539 C 21.5 4.789 21.5 2.039 21.5 2.039 L 3 2.039 C 3 2.039 3 4.789 4.2 6.539 C 5.2 8.039 8.686 12.059 9.887 13.087 C 11 14.039 12.25 14.039 12.25 14.039 C 12.25 14.039 13.5 14.039 14.613 13.087 Z" className="loader__sand-mound-top" />
-        </clipPath>
-        <clipPath id="sand-mound-bottom">
-          <path d="M 14.613 20.452 C 15.814 21.48 19.3 25.5 20.3 27 C 21.5 28.75 21.5 31.5 21.5 31.5 L 3 31.5 C 3 31.5 3 28.75 4.2 27 C 5.2 25.5 8.686 21.48 9.887 20.452 C 11 19.5 12.25 19.5 12.25 19.5 C 12.25 19.5 13.5 19.5 14.613 20.452 Z" className="loader__sand-mound-bottom" />
-        </clipPath>
-        <g transform="translate(2,2)">
-          <g transform="rotate(-90,26,26)" strokeLinecap="round" strokeDashoffset="153.94" strokeDasharray="153.94 153.94" stroke="hsl(0,0%,100%)" fill="none">
-            <circle transform="rotate(0,26,26)" r="24.5" cy={26} cx={26} strokeWidth="2.5" className="loader__motion-thick" />
-            <circle transform="rotate(90,26,26)" r="24.5" cy={26} cx={26} strokeWidth="1.75" className="loader__motion-medium" />
-            <circle transform="rotate(180,26,26)" r="24.5" cy={26} cx={26} strokeWidth={1} className="loader__motion-thin" />
-          </g>
-          <g transform="translate(13.75,9.25)" className="loader__model">
-            <path d="M 1.5 2 L 23 2 C 23 2 22.5 8.5 19 12 C 16 15.5 13.5 13.5 13.5 16.75 C 13.5 20 16 18 19 21.5 C 22.5 25 23 31.5 23 31.5 L 1.5 31.5 C 1.5 31.5 2 25 5.5 21.5 C 8.5 18 11 20 11 16.75 C 11 13.5 8.5 15.5 5.5 12 C 2 8.5 1.5 2 1.5 2 Z" fill="hsl(var(--hue),90%,85%)" />
-            <g strokeLinecap="round" stroke="hsl(35,90%,90%)">
-              <line y2="20.75" x2={12} y1="15.75" x1={12} strokeDasharray="0.25 33.75" strokeWidth={1} className="loader__sand-grain-left" />
-              <line y2="21.75" x2="12.5" y1="16.75" x1="12.5" strokeDasharray="0.25 33.75" strokeWidth={1} className="loader__sand-grain-right" />
-              <line y2="31.5" x2="12.25" y1={18} x1="12.25" strokeDasharray="0.5 107.5" strokeWidth={1} className="loader__sand-drop" />
-              <line y2="31.5" x2="12.25" y1="14.75" x1="12.25" strokeDasharray="54 54" strokeWidth="1.5" className="loader__sand-fill" />
-              <line y2="31.5" x2={12} y1={16} x1={12} strokeDasharray="1 107" strokeWidth={1} stroke="hsl(35,90%,83%)" className="loader__sand-line-left" />
-              <line y2="31.5" x2="12.5" y1={16} x1="12.5" strokeDasharray="12 96" strokeWidth={1} stroke="hsl(35,90%,83%)" className="loader__sand-line-right" />
-              <g strokeWidth={0} fill="hsl(35,90%,90%)">
-                <path d="M 12.25 15 L 15.392 13.486 C 21.737 11.168 22.5 2 22.5 2 L 2 2.013 C 2 2.013 2.753 11.046 9.009 13.438 L 12.25 15 Z" clipPath="url(#sand-mound-top)" />
-                <path d="M 12.25 18.5 L 15.392 20.014 C 21.737 22.332 22.5 31.5 22.5 31.5 L 2 31.487 C 2 31.487 2.753 22.454 9.009 20.062 Z" clipPath="url(#sand-mound-bottom)" />
-              </g>
-            </g>
-            <g strokeWidth={2} strokeLinecap="round" opacity="0.7" fill="none">
-              <path d="M 19.437 3.421 C 19.437 3.421 19.671 6.454 17.914 8.846 C 16.157 11.238 14.5 11.5 14.5 11.5" stroke="hsl(0,0%,100%)" className="loader__glare-top" />
-              <path transform="rotate(180,12.25,16.75)" d="M 19.437 3.421 C 19.437 3.421 19.671 6.454 17.914 8.846 C 16.157 11.238 14.5 11.5 14.5 11.5" stroke="hsla(0,0%,100%,0)" className="loader__glare-bottom" />
-            </g>
-            <rect height={2} width="24.5" fill="hsl(var(--hue),90%,50%)" />
-            <rect height={1} width="19.5" y="0.5" x="2.5" ry="0.5" rx="0.5" fill="hsl(var(--hue),90%,57.5%)" />
-            <rect height={2} width="24.5" y="31.5" fill="hsl(var(--hue),90%,50%)" />
-            <rect height={1} width="19.5" y={32} x="2.5" ry="0.5" rx="0.5" fill="hsl(var(--hue),90%,57.5%)" />
-          </g>
-        </g>
-      </svg>
+      <div className="loader">
+        <div className="truckWrapper">
+          <div className="truckBody">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 198 93" className="trucksvg">
+              <path strokeWidth={3} stroke="#282828" fill="#F83D3D" d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z" />
+              <path strokeWidth={3} stroke="#282828" fill="#7D7C7C" d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z" />
+              <path strokeWidth={2} stroke="#282828" fill="#282828" d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z" />
+              <rect strokeWidth={2} stroke="#282828" fill="#FFFCAB" rx={1} height={7} width={5} y={63} x={187} />
+              <rect strokeWidth={2} stroke="#282828" fill="#282828" rx={1} height={11} width={4} y={81} x={193} />
+              <rect strokeWidth={3} stroke="#282828" fill="#DFDFDF" rx="2.5" height={90} width={121} y="1.5" x="6.5" />
+              <rect strokeWidth={2} stroke="#282828" fill="#DFDFDF" rx={2} height={4} width={6} y={84} x={1} />
+            </svg>
+          </div>
+          <div className="truckTires">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 30" className="tiresvg">
+              <circle strokeWidth={3} stroke="#282828" fill="#282828" r="13.5" cy={15} cx={15} />
+              <circle fill="#DFDFDF" r={7} cy={15} cx={15} />
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 30" className="tiresvg">
+              <circle strokeWidth={3} stroke="#282828" fill="#282828" r="13.5" cy={15} cx={15} />
+              <circle fill="#DFDFDF" r={7} cy={15} cx={15} />
+            </svg>
+          </div>
+          <div className="road" />
+          <svg xmlSpace="preserve" viewBox="0 0 453.459 453.459" xmlnsXlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1" fill="#000000" className="lampPost">
+            <path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993
+      c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514
+      c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16
+      c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914
+      h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75
+      v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795
+      V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z
+      M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017
+      h78.747C231.693,100.736,232.77,106.162,232.77,111.694z" />
+          </svg>
+        </div>
+      </div>
     </StyledWrapper>
   );
 }
 
 const StyledWrapper = styled.div`
   .loader {
-    --dur: 2s;
-    display: block;
-    margin: auto;
-    width: 14em;
-    height: auto;
-  }
-  .loader__glare-top,
-  .loader__glare-bottom,
-  .loader__model,
-  .loader__motion-thick,
-  .loader__motion-medium,
-  .loader__motion-thin,
-  .loader__sand-drop,
-  .loader__sand-fill,
-  .loader__sand-grain-left,
-  .loader__sand-grain-right,
-  .loader__sand-line-left,
-  .loader__sand-line-right,
-  .loader__sand-mound-top,
-  .loader__sand-mound-bottom {
-    animation-duration: var(--dur);
-    animation-timing-function: cubic-bezier(0.83, 0, 0.17, 1);
-    animation-iteration-count: infinite;
-  }
-  .loader__glare-top {
-    animation-name: glare-top;
-  }
-  .loader__glare-bottom {
-    animation-name: glare-bottom;
-  }
-  .loader__model {
-    animation-name: loader-flip;
-    transform-origin: 12.25px 16.75px;
-  }
-  .loader__motion-thick,
-  .loader__motion-medium,
-  .loader__motion-thin {
-    transform-origin: 26px 26px;
-  }
-  .loader__motion-thick {
-    animation-name: motion-thick;
-  }
-  .loader__motion-medium {
-    animation-name: motion-medium;
-  }
-  .loader__motion-thin {
-    animation-name: motion-thin;
-  }
-  .loader__sand-drop {
-    animation-name: sand-drop;
-  }
-  .loader__sand-fill {
-    animation-name: sand-fill;
-  }
-  .loader__sand-grain-left {
-    animation-name: sand-grain-left;
-  }
-  .loader__sand-grain-right {
-    animation-name: sand-grain-right;
-  }
-  .loader__sand-line-left {
-    animation-name: sand-line-left;
-  }
-  .loader__sand-line-right {
-    animation-name: sand-line-right;
-  }
-  .loader__sand-mound-top {
-    animation-name: sand-mound-top;
-  }
-  .loader__sand-mound-bottom {
-    animation-name: sand-mound-bottom;
-    transform-origin: 12.25px 31.5px;
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  /* Dark theme */
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: hsl(var(--hue), 90%, 10%);
-      --fg: hsl(var(--hue), 90%, 90%);
+  .truckWrapper {
+    width: 200px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    align-items: center;
+    justify-content: flex-end;
+    overflow-x: hidden;
+  }
+  /* truck upper body */
+  .truckBody {
+    width: 130px;
+    height: fit-content;
+    margin-bottom: 6px;
+    animation: motion 1s linear infinite;
+  }
+  /* truck suspension animation*/
+  @keyframes motion {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(3px);
+    }
+    100% {
+      transform: translateY(0px);
     }
   }
-  /* Animation */
-  @keyframes loader-flip {
-    from {
-      transform: translate(13.75px, 9.25px) rotate(-180deg);
-    }
-    24%,
-    to {
-      transform: translate(13.75px, 9.25px) rotate(0);
-    }
+  /* truck's tires */
+  .truckTires {
+    width: 130px;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 10px 0px 15px;
+    position: absolute;
+    bottom: 0;
   }
-  @keyframes glare-top {
-    from {
-      stroke: rgba(255, 255, 255, 0);
-    }
-    24%,
-    to {
-      stroke: white;
-    }
+  .truckTires svg {
+    width: 24px;
   }
-  @keyframes glare-bottom {
-    from {
-      stroke: white;
-    }
-    24%,
-    to {
-      stroke: rgba(255, 255, 255, 0);
-    }
+
+  .road {
+    width: 100%;
+    height: 1.5px;
+    background-color: #282828;
+    position: relative;
+    bottom: 0;
+    align-self: flex-end;
+    border-radius: 3px;
   }
-  @keyframes motion-thick {
-    from {
-      animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
-      stroke: rgba(255, 255, 255, 0);
-      stroke-dashoffset: 153.94;
-      transform: rotate(0.67turn);
-    }
-    20% {
-      animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
-      stroke: rgb(32, 32, 32);
-      stroke-dashoffset: 141.11;
-      transform: rotate(1turn);
-    }
-    40%,
-    to {
-      stroke: rgba(255, 255, 255, 0);
-      stroke-dashoffset: 153.94;
-      transform: rotate(1.33turn);
-    }
+  .road::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 100%;
+    background-color: #282828;
+    right: -50%;
+    border-radius: 3px;
+    animation: roadAnimation 1.4s linear infinite;
+    border-left: 10px solid white;
   }
-  @keyframes motion-medium {
-    from,
-    8% {
-      animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
-      stroke: rgba(255, 255, 255, 0);
-      stroke-dashoffset: 153.94;
-      transform: rotate(0.5turn);
-    }
-    20% {
-      animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
-      stroke: white;
-      stroke-dashoffset: 147.53;
-      transform: rotate(0.83turn);
-    }
-    32%,
-    to {
-      stroke: rgba(255, 255, 255, 0);
-      stroke-dashoffset: 153.94;
-      transform: rotate(1.17turn);
-    }
+  .road::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 100%;
+    background-color: #282828;
+    right: -65%;
+    border-radius: 3px;
+    animation: roadAnimation 1.4s linear infinite;
+    border-left: 4px solid white;
   }
-  @keyframes motion-thin {
-    from,
-    4% {
-      animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
-      stroke: rgba(255, 255, 255, 0);
-      stroke-dashoffset: 153.94;
-      transform: rotate(0.33turn);
-    }
-    24% {
-      animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
-      stroke: rgb(53, 53, 53);
-      stroke-dashoffset: 134.7;
-      transform: rotate(0.67turn);
-    }
-    44%,
-    to {
-      stroke: rgba(255, 255, 255, 0);
-      stroke-dashoffset: 153.94;
-      transform: rotate(1turn);
-    }
+
+  .lampPost {
+    position: absolute;
+    bottom: 0;
+    right: -90%;
+    height: 90px;
+    animation: roadAnimation 1.4s linear infinite;
   }
-  @keyframes sand-drop {
-    from,
-    10% {
-      animation-timing-function: cubic-bezier(0.12, 0, 0.39, 0);
-      stroke-dashoffset: 1;
+
+  @keyframes roadAnimation {
+    0% {
+      transform: translateX(0px);
     }
-    70%,
-    to {
-      stroke-dashoffset: -107;
-    }
-  }
-  @keyframes sand-fill {
-    from,
-    10% {
-      animation-timing-function: cubic-bezier(0.12, 0, 0.39, 0);
-      stroke-dashoffset: 55;
-    }
-    70%,
-    to {
-      stroke-dashoffset: -54;
-    }
-  }
-  @keyframes sand-grain-left {
-    from,
-    10% {
-      animation-timing-function: cubic-bezier(0.12, 0, 0.39, 0);
-      stroke-dashoffset: 29;
-    }
-    70%,
-    to {
-      stroke-dashoffset: -22;
-    }
-  }
-  @keyframes sand-grain-right {
-    from,
-    10% {
-      animation-timing-function: cubic-bezier(0.12, 0, 0.39, 0);
-      stroke-dashoffset: 27;
-    }
-    70%,
-    to {
-      stroke-dashoffset: -24;
-    }
-  }
-  @keyframes sand-line-left {
-    from,
-    10% {
-      animation-timing-function: cubic-bezier(0.12, 0, 0.39, 0);
-      stroke-dashoffset: 53;
-    }
-    70%,
-    to {
-      stroke-dashoffset: -55;
-    }
-  }
-  @keyframes sand-line-right {
-    from,
-    10% {
-      animation-timing-function: cubic-bezier(0.12, 0, 0.39, 0);
-      stroke-dashoffset: 14;
-    }
-    70%,
-    to {
-      stroke-dashoffset: -24.5;
-    }
-  }
-  @keyframes sand-mound-top {
-    from,
-    10% {
-      animation-timing-function: linear;
-      transform: translate(0, 0);
-    }
-    15% {
-      animation-timing-function: cubic-bezier(0.12, 0, 0.39, 0);
-      transform: translate(0, 1.5px);
-    }
-    51%,
-    to {
-      transform: translate(0, 13px);
-    }
-  }
-  @keyframes sand-mound-bottom {
-    from,
-    31% {
-      animation-timing-function: cubic-bezier(0.61, 1, 0.88, 1);
-      transform: scale(1, 0);
-    }
-    56%,
-    to {
-      transform: scale(1, 1);
+    100% {
+      transform: translateX(-350px);
     }
   }`;
 
