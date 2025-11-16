@@ -48,7 +48,7 @@ export interface CategoriaRequest {
      * @type {string}
      * @memberof CategoriaRequest
      */
-    tallerId?: string;
+    tallerId: string;
     /**
      * 
      * @type {string}
@@ -68,6 +68,7 @@ export interface CategoriaRequest {
  */
 export function instanceOfCategoriaRequest(value: object): value is CategoriaRequest {
     if (!('nombre' in value) || value['nombre'] === undefined) return false;
+    if (!('tallerId' in value) || value['tallerId'] === undefined) return false;
     return true;
 }
 
@@ -85,7 +86,7 @@ export function CategoriaRequestFromJSONTyped(json: any, ignoreDiscriminator: bo
         'nombre': json['nombre'],
         'descripcion': json['descripcion'] == null ? undefined : json['descripcion'],
         'iconoRecurso': json['iconoRecurso'] == null ? undefined : json['iconoRecurso'],
-        'tallerId': json['tallerId'] == null ? undefined : json['tallerId'],
+        'tallerId': json['tallerId'],
         'mappedGlobalCategoryId': json['mappedGlobalCategoryId'] == null ? undefined : json['mappedGlobalCategoryId'],
         'listaMedios': json['listaMedios'] == null ? undefined : json['listaMedios'],
     };

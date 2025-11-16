@@ -162,7 +162,7 @@ export class ProductosApi extends runtime.BaseAPI {
     }
 
     /**
-     * Crea un nuevo producto en el inventario
+     * Crea un nuevo producto en el inventario. Para imágenes se recomienda subir a Cloudinary desde el cliente usando el endpoint de firma y enviar en `listaMedios` objetos con campos `publicId` y `secure_url`.
      * Crear producto
      */
     async crearProductoRaw(requestParameters: CrearProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -199,7 +199,7 @@ export class ProductosApi extends runtime.BaseAPI {
     }
 
     /**
-     * Crea un nuevo producto en el inventario
+     * Crea un nuevo producto en el inventario. Para imágenes se recomienda subir a Cloudinary desde el cliente usando el endpoint de firma y enviar en `listaMedios` objetos con campos `publicId` y `secure_url`.
      * Crear producto
      */
     async crearProducto(requestParameters: CrearProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -249,7 +249,7 @@ export class ProductosApi extends runtime.BaseAPI {
     }
 
     /**
-     * Devuelve los detalles completos de un producto
+     * Devuelve los detalles completos de un producto (incluye `listaMedios` si existen)
      * Obtener producto por ID
      */
     async getProductoRaw(requestParameters: GetProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -283,7 +283,7 @@ export class ProductosApi extends runtime.BaseAPI {
     }
 
     /**
-     * Devuelve los detalles completos de un producto
+     * Devuelve los detalles completos de un producto (incluye `listaMedios` si existen)
      * Obtener producto por ID
      */
     async getProducto(requestParameters: GetProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {

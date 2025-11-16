@@ -40,11 +40,10 @@ export interface GetCategoriaRequest {
 }
 
 export interface Listar2Request {
+    tallerId: string;
     q?: string;
     page?: number;
     size?: number;
-    tallerId?: string;
-    global?: boolean;
     todas?: boolean;
 }
 
@@ -104,7 +103,7 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Crea una nueva categoría de productos
+     * Crea una nueva categoría de productos. Nota: `tallerId` es obligatorio ya que todas las categorías pertenecen a un taller.
      * Crear categoría
      */
     async crearCategoriaRaw(requestParameters: CrearCategoriaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -141,7 +140,7 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Crea una nueva categoría de productos
+     * Crea una nueva categoría de productos. Nota: `tallerId` es obligatorio ya que todas las categorías pertenecen a un taller.
      * Crear categoría
      */
     async crearCategoria(requestParameters: CrearCategoriaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -229,10 +228,17 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Busca categorías por nombre o lista categorías globales o por taller.
+     * Busca categorías por nombre o lista categorías de un taller. Por defecto `tallerId` es obligatorio; usar `todas=true` sólo si se es platform-admin para obtener todas las categorías.
      * Buscar/listar categorías
      */
     async listar2Raw(requestParameters: Listar2Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['tallerId'] == null) {
+            throw new runtime.RequiredError(
+                'tallerId',
+                'Required parameter "tallerId" was null or undefined when calling listar2().'
+            );
+        }
+
         const queryParameters: any = {};
 
         if (requestParameters['q'] != null) {
@@ -249,10 +255,6 @@ export class CategoriasApi extends runtime.BaseAPI {
 
         if (requestParameters['tallerId'] != null) {
             queryParameters['tallerId'] = requestParameters['tallerId'];
-        }
-
-        if (requestParameters['global'] != null) {
-            queryParameters['global'] = requestParameters['global'];
         }
 
         if (requestParameters['todas'] != null) {
@@ -280,10 +282,10 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Busca categorías por nombre o lista categorías globales o por taller.
+     * Busca categorías por nombre o lista categorías de un taller. Por defecto `tallerId` es obligatorio; usar `todas=true` sólo si se es platform-admin para obtener todas las categorías.
      * Buscar/listar categorías
      */
-    async listar2(requestParameters: Listar2Request = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async listar2(requestParameters: Listar2Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.listar2Raw(requestParameters, initOverrides);
     }
 

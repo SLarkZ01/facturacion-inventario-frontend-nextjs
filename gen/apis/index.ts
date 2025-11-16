@@ -8,6 +8,7 @@ export * from './FacturasApi';
 export * from './FavoritosApi';
 export * from './MovimientosApi';
 export * from './ProductosApi';
+export * from './PublicCategoriasControllerApi';
 export * from './StockApi';
 export * from './TallerMiembrosApi';
 export * from './TalleresApi';
