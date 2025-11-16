@@ -11,3 +11,4 @@ export * from './ProductosApi';
 export * from './StockApi';
 export * from './TallerMiembrosApi';
 export * from './TalleresApi';
+export * from './UploadsApi';

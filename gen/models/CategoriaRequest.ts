@@ -55,6 +55,12 @@ export interface CategoriaRequest {
      * @memberof CategoriaRequest
      */
     mappedGlobalCategoryId?: string;
+    /**
+     * 
+     * @type {Array<{ [key: string]: object; }>}
+     * @memberof CategoriaRequest
+     */
+    listaMedios?: Array<{ [key: string]: object; }>;
 }
 
 /**
@@ -81,6 +87,7 @@ export function CategoriaRequestFromJSONTyped(json: any, ignoreDiscriminator: bo
         'iconoRecurso': json['iconoRecurso'] == null ? undefined : json['iconoRecurso'],
         'tallerId': json['tallerId'] == null ? undefined : json['tallerId'],
         'mappedGlobalCategoryId': json['mappedGlobalCategoryId'] == null ? undefined : json['mappedGlobalCategoryId'],
+        'listaMedios': json['listaMedios'] == null ? undefined : json['listaMedios'],
     };
 }
 
@@ -96,6 +103,7 @@ export function CategoriaRequestToJSON(value?: CategoriaRequest | null): any {
         'iconoRecurso': value['iconoRecurso'],
         'tallerId': value['tallerId'],
         'mappedGlobalCategoryId': value['mappedGlobalCategoryId'],
+        'listaMedios': value['listaMedios'],
     };
 }
 

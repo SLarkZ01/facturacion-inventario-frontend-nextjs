@@ -1,22 +1,23 @@
 import { NextResponse } from "next/server";
-import { meService } from "@/lib/server/authServer";
+import { aceptarInvitacionService } from "@/lib/server/talleresServer";
 import { cookies } from "next/headers";
 
 /**
- * GET /api/auth/me
- * Proxy para obtener los datos del usuario autenticado.
- * Usa el access_token de las cookies.
+ * POST /api/talleres/invitaciones/accept
+ * Acepta una invitación para unirse a un taller
  */
-export async function GET() {
+export async function POST(request: Request) {
   try {
     const cookieStore = await cookies();
-    const accessToken = cookieStore.get("access_token")?.value;
+    const access = cookieStore.get("access_token")?.value;
 
-    if (!accessToken) {
+    if (!access) {
       return NextResponse.json({ message: "No autorizado" }, { status: 401 });
     }
 
-    const result = await meService(accessToken);
+    const body = await request.json();
+    const result = await aceptarInvitacionService(body, access);
+
     return NextResponse.json(result.body, { status: result.status });
   } catch {
     return NextResponse.json({ message: "Error en servidor" }, { status: 500 });
