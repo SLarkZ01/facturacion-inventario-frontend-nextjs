@@ -8,6 +8,7 @@ apis/FavoritosApi.ts
 apis/MovimientosApi.ts
 apis/ProductosApi.ts
 apis/PublicCategoriasControllerApi.ts
+apis/PublicProductosControllerApi.ts
 apis/StockApi.ts
 apis/TallerMiembrosApi.ts
 apis/TalleresApi.ts

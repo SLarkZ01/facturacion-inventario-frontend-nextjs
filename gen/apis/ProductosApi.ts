@@ -40,11 +40,11 @@ export interface EliminarRequest {
     id: string;
 }
 
-export interface GetProductoRequest {
+export interface GetProducto1Request {
     id: string;
 }
 
-export interface ListarRequest {
+export interface Listar1Request {
     q?: string;
     categoriaId?: string;
     tallerId?: string;
@@ -58,7 +58,7 @@ export interface ListarRequest {
 export class ProductosApi extends runtime.BaseAPI {
 
     /**
-     * Actualiza los datos del producto. Envía solo los campos que deseas actualizar.
+     * Actualiza los datos del producto. Envía solo los campos que deseas actualizar.  **IMPORTANTE sobre `listaMedios`:** - Si actualizas `listaMedios`, DEBE incluir `publicId` en cada medio - Al actualizar, se reemplazan las imágenes anteriores (las viejas se eliminan de Cloudinary automáticamente) - Para agregar nuevas imágenes manteniendo las existentes, primero obtén el producto actual y agrega a su array  **Nota sobre `specs`:** - Al actualizar `specs`, se reemplaza el objeto completo (no se hace merge) - Para actualizar una sola especificación, envía el objeto completo con el cambio 
      * Actualizar producto
      */
     async actualizarProductoRaw(requestParameters: ActualizarProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -102,7 +102,7 @@ export class ProductosApi extends runtime.BaseAPI {
     }
 
     /**
-     * Actualiza los datos del producto. Envía solo los campos que deseas actualizar.
+     * Actualiza los datos del producto. Envía solo los campos que deseas actualizar.  **IMPORTANTE sobre `listaMedios`:** - Si actualizas `listaMedios`, DEBE incluir `publicId` en cada medio - Al actualizar, se reemplazan las imágenes anteriores (las viejas se eliminan de Cloudinary automáticamente) - Para agregar nuevas imágenes manteniendo las existentes, primero obtén el producto actual y agrega a su array  **Nota sobre `specs`:** - Al actualizar `specs`, se reemplaza el objeto completo (no se hace merge) - Para actualizar una sola especificación, envía el objeto completo con el cambio 
      * Actualizar producto
      */
     async actualizarProducto(requestParameters: ActualizarProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -162,7 +162,7 @@ export class ProductosApi extends runtime.BaseAPI {
     }
 
     /**
-     * Crea un nuevo producto en el inventario. Para imágenes se recomienda subir a Cloudinary desde el cliente usando el endpoint de firma y enviar en `listaMedios` objetos con campos `publicId` y `secure_url`.
+     * Crea un nuevo producto en el inventario.  **IMPORTANTE - Gestión de Imágenes:** - Las imágenes DEBEN subirse primero a Cloudinary usando `/api/uploads/cloudinary-sign` - Cada objeto en `listaMedios` DEBE incluir el campo `publicId` (CRÍTICO para eliminar imágenes al borrar el producto) - Sin `publicId`, las imágenes quedarán huérfanas en Cloudinary y no se podrán eliminar automáticamente  **Campos recomendados:** - `tallerId`: Asocia el producto a un taller específico (recomendado para multi-tenant) - `specs`: Mapa de especificaciones técnicas (ej: {\"Marca\":\"Yamaha\", \"Modelo\":\"R15\", \"Peso\":\"0.2kg\"}) - `listaMedios`: Array de objetos con estructura: {type, publicId, secure_url, format, width, height, order}  **Flujo recomendado para imágenes:** 1. Obtener firma: POST /api/uploads/cloudinary-sign con {folder: \"products\"} 2. Subir a Cloudinary con la firma obtenida 3. Guardar en `listaMedios` el objeto completo que devuelve Cloudinary (especialmente `public_id`) 
      * Crear producto
      */
     async crearProductoRaw(requestParameters: CrearProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -199,7 +199,7 @@ export class ProductosApi extends runtime.BaseAPI {
     }
 
     /**
-     * Crea un nuevo producto en el inventario. Para imágenes se recomienda subir a Cloudinary desde el cliente usando el endpoint de firma y enviar en `listaMedios` objetos con campos `publicId` y `secure_url`.
+     * Crea un nuevo producto en el inventario.  **IMPORTANTE - Gestión de Imágenes:** - Las imágenes DEBEN subirse primero a Cloudinary usando `/api/uploads/cloudinary-sign` - Cada objeto en `listaMedios` DEBE incluir el campo `publicId` (CRÍTICO para eliminar imágenes al borrar el producto) - Sin `publicId`, las imágenes quedarán huérfanas en Cloudinary y no se podrán eliminar automáticamente  **Campos recomendados:** - `tallerId`: Asocia el producto a un taller específico (recomendado para multi-tenant) - `specs`: Mapa de especificaciones técnicas (ej: {\"Marca\":\"Yamaha\", \"Modelo\":\"R15\", \"Peso\":\"0.2kg\"}) - `listaMedios`: Array de objetos con estructura: {type, publicId, secure_url, format, width, height, order}  **Flujo recomendado para imágenes:** 1. Obtener firma: POST /api/uploads/cloudinary-sign con {folder: \"products\"} 2. Subir a Cloudinary con la firma obtenida 3. Guardar en `listaMedios` el objeto completo que devuelve Cloudinary (especialmente `public_id`) 
      * Crear producto
      */
     async crearProducto(requestParameters: CrearProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -249,14 +249,14 @@ export class ProductosApi extends runtime.BaseAPI {
     }
 
     /**
-     * Devuelve los detalles completos de un producto (incluye `listaMedios` si existen)
+     * Devuelve los detalles completos de un producto.  **La respuesta incluye:** - Datos básicos (nombre, descripción, precio, stock) - `listaMedios`: Array con imágenes (cada una con publicId, secure_url, etc.) - `specs`: Objeto con especificaciones técnicas (si existen) - `tallerId`: ID del taller propietario (si existe) - `categoriaId`: ID de la categoría (si existe) 
      * Obtener producto por ID
      */
-    async getProductoRaw(requestParameters: GetProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async getProducto1Raw(requestParameters: GetProducto1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling getProducto().'
+                'Required parameter "id" was null or undefined when calling getProducto1().'
             );
         }
 
@@ -283,18 +283,18 @@ export class ProductosApi extends runtime.BaseAPI {
     }
 
     /**
-     * Devuelve los detalles completos de un producto (incluye `listaMedios` si existen)
+     * Devuelve los detalles completos de un producto.  **La respuesta incluye:** - Datos básicos (nombre, descripción, precio, stock) - `listaMedios`: Array con imágenes (cada una con publicId, secure_url, etc.) - `specs`: Objeto con especificaciones técnicas (si existen) - `tallerId`: ID del taller propietario (si existe) - `categoriaId`: ID de la categoría (si existe) 
      * Obtener producto por ID
      */
-    async getProducto(requestParameters: GetProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.getProductoRaw(requestParameters, initOverrides);
+    async getProducto1(requestParameters: GetProducto1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.getProducto1Raw(requestParameters, initOverrides);
     }
 
     /**
      * Devuelve una lista paginada de productos. Soporta búsqueda por nombre (q) o filtrado por categoría (categoriaId).
      * Listar productos
      */
-    async listarRaw(requestParameters: ListarRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async listar1Raw(requestParameters: Listar1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         if (requestParameters['q'] != null) {
@@ -341,8 +341,8 @@ export class ProductosApi extends runtime.BaseAPI {
      * Devuelve una lista paginada de productos. Soporta búsqueda por nombre (q) o filtrado por categoría (categoriaId).
      * Listar productos
      */
-    async listar(requestParameters: ListarRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.listarRaw(requestParameters, initOverrides);
+    async listar1(requestParameters: Listar1Request = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.listar1Raw(requestParameters, initOverrides);
     }
 
 }

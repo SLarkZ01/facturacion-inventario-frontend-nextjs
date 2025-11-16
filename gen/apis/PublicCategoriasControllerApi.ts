@@ -15,9 +15,14 @@
 
 import * as runtime from '../runtime';
 
-export interface ListarPublicoRequest {
+export interface GetCategoriaRequest {
+    id: string;
+}
+
+export interface ListarCategoriasRequest {
     page?: number;
     size?: number;
+    q?: string;
 }
 
 /**
@@ -26,8 +31,52 @@ export interface ListarPublicoRequest {
 export class PublicCategoriasControllerApi extends runtime.BaseAPI {
 
     /**
+     * Devuelve los detalles de una categoría específica sin requerir autenticación.  **Nota:** No requiere token de autenticación. 
+     * Obtener categoría por ID (público)
      */
-    async listarPublicoRaw(requestParameters: ListarPublicoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+    async getCategoriaRaw(requestParameters: GetCategoriaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getCategoria().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/public/categorias/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Devuelve los detalles de una categoría específica sin requerir autenticación.  **Nota:** No requiere token de autenticación. 
+     * Obtener categoría por ID (público)
+     */
+    async getCategoria(requestParameters: GetCategoriaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.getCategoriaRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Devuelve todas las categorías (globales + por taller) sin requerir autenticación. Este endpoint está diseñado para clientes móviles y aplicaciones públicas.  **Nota:** No requiere token de autenticación. 
+     * Listar todas las categorías (público)
+     */
+    async listarCategoriasRaw(requestParameters: ListarCategoriasRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         if (requestParameters['page'] != null) {
@@ -36,6 +85,10 @@ export class PublicCategoriasControllerApi extends runtime.BaseAPI {
 
         if (requestParameters['size'] != null) {
             queryParameters['size'] = requestParameters['size'];
+        }
+
+        if (requestParameters['q'] != null) {
+            queryParameters['q'] = requestParameters['q'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -55,14 +108,15 @@ export class PublicCategoriasControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse<any>(response);
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
+     * Devuelve todas las categorías (globales + por taller) sin requerir autenticación. Este endpoint está diseñado para clientes móviles y aplicaciones públicas.  **Nota:** No requiere token de autenticación. 
+     * Listar todas las categorías (público)
      */
-    async listarPublico(requestParameters: ListarPublicoRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
-        const response = await this.listarPublicoRaw(requestParameters, initOverrides);
-        return await response.value();
+    async listarCategorias(requestParameters: ListarCategoriasRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.listarCategoriasRaw(requestParameters, initOverrides);
     }
 
 }

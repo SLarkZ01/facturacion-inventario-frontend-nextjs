@@ -30,7 +30,7 @@ export interface GetMovimientoRequest {
     id: string;
 }
 
-export interface Listar1Request {
+export interface Listar2Request {
     productoId?: string;
     tipo?: string;
 }
@@ -131,7 +131,7 @@ export class MovimientosApi extends runtime.BaseAPI {
      * Lista movimientos de stock. Puede filtrarse por producto o por tipo de movimiento.
      * Listar movimientos
      */
-    async listar1Raw(requestParameters: Listar1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async listar2Raw(requestParameters: Listar2Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         if (requestParameters['productoId'] != null) {
@@ -166,8 +166,8 @@ export class MovimientosApi extends runtime.BaseAPI {
      * Lista movimientos de stock. Puede filtrarse por producto o por tipo de movimiento.
      * Listar movimientos
      */
-    async listar1(requestParameters: Listar1Request = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.listar1Raw(requestParameters, initOverrides);
+    async listar2(requestParameters: Listar2Request = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.listar2Raw(requestParameters, initOverrides);
     }
 
 }

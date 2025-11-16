@@ -35,11 +35,11 @@ export interface Eliminar1Request {
     id: string;
 }
 
-export interface GetCategoriaRequest {
+export interface GetCategoria1Request {
     id: string;
 }
 
-export interface Listar2Request {
+export interface Listar3Request {
     tallerId: string;
     q?: string;
     page?: number;
@@ -53,6 +53,7 @@ export interface Listar2Request {
 export class CategoriasApi extends runtime.BaseAPI {
 
     /**
+     * Actualiza los datos de una categoría. Envía solo los campos que deseas actualizar.  **IMPORTANTE sobre `listaMedios`:** - Si actualizas `listaMedios`, DEBE incluir `publicId` en cada medio - Al actualizar, se reemplazan las imágenes anteriores (las viejas se eliminan de Cloudinary automáticamente) - Para agregar nuevas imágenes manteniendo las existentes, primero obtén la categoría actual y agrega a su array  **Campos actualizables:** - `nombre`: Nombre de la categoría - `descripcion`: Descripción - `tallerId`: ID del taller (normalmente no se cambia) - `listaMedios`: Array de medios (DEBE incluir publicId) - `mappedGlobalCategoryId`: ID de categoría global 
      * Actualizar categoría
      */
     async actualizarCategoriaRaw(requestParameters: ActualizarCategoriaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -96,6 +97,7 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
+     * Actualiza los datos de una categoría. Envía solo los campos que deseas actualizar.  **IMPORTANTE sobre `listaMedios`:** - Si actualizas `listaMedios`, DEBE incluir `publicId` en cada medio - Al actualizar, se reemplazan las imágenes anteriores (las viejas se eliminan de Cloudinary automáticamente) - Para agregar nuevas imágenes manteniendo las existentes, primero obtén la categoría actual y agrega a su array  **Campos actualizables:** - `nombre`: Nombre de la categoría - `descripcion`: Descripción - `tallerId`: ID del taller (normalmente no se cambia) - `listaMedios`: Array de medios (DEBE incluir publicId) - `mappedGlobalCategoryId`: ID de categoría global 
      * Actualizar categoría
      */
     async actualizarCategoria(requestParameters: ActualizarCategoriaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -103,7 +105,7 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Crea una nueva categoría de productos. Nota: `tallerId` es obligatorio ya que todas las categorías pertenecen a un taller.
+     * Crea una nueva categoría de productos.  **IMPORTANTE:** - `tallerId` es REQUERIDO para crear categorías (validación en el servicio) - Si no se proporciona `tallerId`, el backend devolverá: {\"error\": \"tallerId es obligatorio para crear una categoría\"}  **Gestión de Imágenes:** - Las imágenes DEBEN subirse primero a Cloudinary usando `/api/uploads/cloudinary-sign` - Cada objeto en `listaMedios` DEBE incluir el campo `publicId` (CRÍTICO para eliminar imágenes al borrar la categoría) - Sin `publicId`, las imágenes quedarán huérfanas en Cloudinary y no se podrán eliminar automáticamente  **Estructura de `listaMedios`:** - Cada elemento debe tener: {type, publicId, secure_url, format, width, height, order} - El campo `publicId` es retornado por Cloudinary como `public_id` al subir la imagen  **Flujo recomendado para imágenes:** 1. Obtener firma: POST /api/uploads/cloudinary-sign con {folder: \"products\"} 2. Subir a Cloudinary con la firma obtenida 3. Guardar en `listaMedios` el objeto completo que devuelve Cloudinary (especialmente `public_id`) 
      * Crear categoría
      */
     async crearCategoriaRaw(requestParameters: CrearCategoriaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -140,7 +142,7 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Crea una nueva categoría de productos. Nota: `tallerId` es obligatorio ya que todas las categorías pertenecen a un taller.
+     * Crea una nueva categoría de productos.  **IMPORTANTE:** - `tallerId` es REQUERIDO para crear categorías (validación en el servicio) - Si no se proporciona `tallerId`, el backend devolverá: {\"error\": \"tallerId es obligatorio para crear una categoría\"}  **Gestión de Imágenes:** - Las imágenes DEBEN subirse primero a Cloudinary usando `/api/uploads/cloudinary-sign` - Cada objeto en `listaMedios` DEBE incluir el campo `publicId` (CRÍTICO para eliminar imágenes al borrar la categoría) - Sin `publicId`, las imágenes quedarán huérfanas en Cloudinary y no se podrán eliminar automáticamente  **Estructura de `listaMedios`:** - Cada elemento debe tener: {type, publicId, secure_url, format, width, height, order} - El campo `publicId` es retornado por Cloudinary como `public_id` al subir la imagen  **Flujo recomendado para imágenes:** 1. Obtener firma: POST /api/uploads/cloudinary-sign con {folder: \"products\"} 2. Subir a Cloudinary con la firma obtenida 3. Guardar en `listaMedios` el objeto completo que devuelve Cloudinary (especialmente `public_id`) 
      * Crear categoría
      */
     async crearCategoria(requestParameters: CrearCategoriaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -148,6 +150,7 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
+     * Elimina una categoría por ID.  **IMPORTANTE:** - También elimina automáticamente las imágenes asociadas de Cloudinary (si existen en `listaMedios` con `publicId`) - Si la categoría tiene productos asociados, puede fallar (dependiendo de la lógica de negocio) - Esta acción no se puede deshacer  **Limpieza automática:** - Todas las imágenes en `listaMedios` que tengan `publicId` serán eliminadas de Cloudinary - Si alguna imagen no tiene `publicId`, quedará huérfana en Cloudinary 
      * Eliminar categoría
      */
     async eliminar1Raw(requestParameters: Eliminar1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -181,6 +184,7 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
+     * Elimina una categoría por ID.  **IMPORTANTE:** - También elimina automáticamente las imágenes asociadas de Cloudinary (si existen en `listaMedios` con `publicId`) - Si la categoría tiene productos asociados, puede fallar (dependiendo de la lógica de negocio) - Esta acción no se puede deshacer  **Limpieza automática:** - Todas las imágenes en `listaMedios` que tengan `publicId` serán eliminadas de Cloudinary - Si alguna imagen no tiene `publicId`, quedará huérfana en Cloudinary 
      * Eliminar categoría
      */
     async eliminar1(requestParameters: Eliminar1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -188,13 +192,14 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Obtener categoría
+     * Devuelve los detalles completos de una categoría.  **La respuesta incluye:** - Datos básicos (nombre, descripción) - `tallerId`: ID del taller propietario - `listaMedios`: Array con imágenes (cada una con publicId, secure_url, etc.) - `mappedGlobalCategoryId`: ID de categoría global (si existe)  **Nota:** Este endpoint es público (no requiere autenticación) 
+     * Obtener categoría por ID
      */
-    async getCategoriaRaw(requestParameters: GetCategoriaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async getCategoria1Raw(requestParameters: GetCategoria1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling getCategoria().'
+                'Required parameter "id" was null or undefined when calling getCategoria1().'
             );
         }
 
@@ -221,21 +226,22 @@ export class CategoriasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Obtener categoría
+     * Devuelve los detalles completos de una categoría.  **La respuesta incluye:** - Datos básicos (nombre, descripción) - `tallerId`: ID del taller propietario - `listaMedios`: Array con imágenes (cada una con publicId, secure_url, etc.) - `mappedGlobalCategoryId`: ID de categoría global (si existe)  **Nota:** Este endpoint es público (no requiere autenticación) 
+     * Obtener categoría por ID
      */
-    async getCategoria(requestParameters: GetCategoriaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.getCategoriaRaw(requestParameters, initOverrides);
+    async getCategoria1(requestParameters: GetCategoria1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.getCategoria1Raw(requestParameters, initOverrides);
     }
 
     /**
      * Busca categorías por nombre o lista categorías de un taller. Por defecto `tallerId` es obligatorio; usar `todas=true` sólo si se es platform-admin para obtener todas las categorías.
      * Buscar/listar categorías
      */
-    async listar2Raw(requestParameters: Listar2Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async listar3Raw(requestParameters: Listar3Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['tallerId'] == null) {
             throw new runtime.RequiredError(
                 'tallerId',
-                'Required parameter "tallerId" was null or undefined when calling listar2().'
+                'Required parameter "tallerId" was null or undefined when calling listar3().'
             );
         }
 
@@ -285,8 +291,8 @@ export class CategoriasApi extends runtime.BaseAPI {
      * Busca categorías por nombre o lista categorías de un taller. Por defecto `tallerId` es obligatorio; usar `todas=true` sólo si se es platform-admin para obtener todas las categorías.
      * Buscar/listar categorías
      */
-    async listar2(requestParameters: Listar2Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.listar2Raw(requestParameters, initOverrides);
+    async listar3(requestParameters: Listar3Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.listar3Raw(requestParameters, initOverrides);
     }
 
 }
