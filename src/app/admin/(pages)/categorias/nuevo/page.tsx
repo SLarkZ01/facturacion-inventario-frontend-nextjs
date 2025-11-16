@@ -26,6 +26,17 @@ type ImagePreview = {
   preview: string
 }
 
+type Medio = {
+  type: string
+  publicId: string
+  url: string
+  secure_url?: string
+  format?: string
+  width?: number
+  height?: number
+  order?: number
+}
+
 type Taller = {
   id: number
   nombre: string
@@ -109,11 +120,11 @@ export default function NuevaCategoriaPage() {
     })
   }
 
-  async function uploadToCloudinary(file: File): Promise<string | null> {
+  async function uploadToCloudinary(file: File): Promise<Medio | null> {
     const formData = new FormData()
     formData.append("file", file)
     
-    console.log("📤 Subiendo archivo:", file.name, "Tipo:", file.type, "Tamaño:", file.size)
+    console.log("Subiendo archivo:", file.name, "Tipo:", file.type, "Tamano:", file.size)
     
     try {
       const res = await fetch("/api/upload", {
@@ -121,18 +132,30 @@ export default function NuevaCategoriaPage() {
         body: formData,
       })
 
-      console.log("📡 Respuesta del servidor de upload:", res.status, res.statusText)
+      console.log("Respuesta del servidor de upload:", res.status, res.statusText)
 
       if (res.ok) {
         const data = await res.json()
-        console.log("✅ Archivo subido exitosamente:", data)
-        return data.url
+        console.log("Archivo subido exitosamente:", data)
+        
+        // CRITICO: Construir objeto Medio COMPLETO con publicId
+        const medio: Medio = {
+          type: data.type || file.type,
+          publicId: data.publicId, // CRITICO para poder eliminar de Cloudinary
+          url: data.url,
+          secure_url: data.url,
+          format: data.type?.split('/')[1],
+          width: data.width,
+          height: data.height,
+        }
+        
+        return medio
       } else {
         const errorData = await res.json()
-        console.error("❌ Error al subir archivo:", errorData)
+        console.error("Error al subir archivo:", errorData)
       }
     } catch (error) {
-      console.error("💥 Error uploading:", error)
+      console.error("Error uploading:", error)
     }
     return null
   }
@@ -144,31 +167,41 @@ export default function NuevaCategoriaPage() {
     setIsSubmitting(true)
 
     try {
-      // Subir imágenes
-      const uploadedUrls: Array<{ url: string; type: string }> = []
+      // Subir imagenes
+      const listaMedios: Medio[] = []
       
-      console.log("📸 Iniciando subida de", images.length, "archivos...")
+      console.log("Iniciando subida de", images.length, "archivos...")
       
-      for (const img of images) {
-        const url = await uploadToCloudinary(img.file)
-        if (url) {
-          uploadedUrls.push({ url, type: img.file.type })
-          console.log("✅ Archivo agregado a listaMedios:", url)
+      for (let i = 0; i < images.length; i++) {
+        const img = images[i]
+        const medio = await uploadToCloudinary(img.file)
+        if (medio) {
+          medio.order = i // Ordenar las imagenes
+          listaMedios.push(medio)
+          console.log("Archivo agregado a listaMedios:", medio.publicId)
         } else {
-          console.warn("⚠️ No se pudo subir:", img.file.name)
+          console.warn("No se pudo subir:", img.file.name)
         }
       }
 
-      console.log("📦 Total archivos subidos:", uploadedUrls.length)
+      console.log("Total archivos subidos:", listaMedios.length)
+
+      // Validar que todos los medios tienen publicId
+      const mediosSinPublicId = listaMedios.filter(m => !m.publicId)
+      if (mediosSinPublicId.length > 0) {
+        alert('Error: Algunas imagenes no tienen publicId. Intenta subirlas nuevamente.')
+        setIsSubmitting(false)
+        return
+      }
 
       const payload = {
         nombre: values.nombre,
         descripcion: values.descripcion || undefined,
-        tallerId: values.tallerId, // Obligatorio
-        listaMedios: uploadedUrls.length > 0 ? uploadedUrls : undefined,
+        tallerId: values.tallerId, // REQUERIDO: Todas las categorias pertenecen a un taller
+        listaMedios: listaMedios.length > 0 ? listaMedios : undefined, // Con publicId
       }
 
-      console.log("🚀 Creando categoría con payload:", payload)
+      console.log("Creando categoria con payload:", payload)
 
       const res = await fetch("/api/categorias", {
         method: "POST",
@@ -178,17 +211,17 @@ export default function NuevaCategoriaPage() {
 
       if (res.ok) {
         const createdCategory = await res.json()
-        console.log("✅ Categoría creada exitosamente:", createdCategory)
+        console.log("Categoria creada exitosamente:", createdCategory)
         router.push("/admin/categorias")
         router.refresh()
       } else {
         const errorData = await res.json()
-        console.error("❌ Error al crear categoría:", errorData)
-        alert(`Error: ${errorData.error || "No se pudo crear la categoría"}`)
+        console.error("Error al crear categoria:", errorData)
+        alert(`Error: ${errorData.error || "No se pudo crear la categoria"}`)
       }
     } catch (error) {
       console.error("Error:", error)
-      alert("Error al crear la categoría")
+      alert("Error al crear la categoria")
     } finally {
       setIsSubmitting(false)
     }
@@ -257,7 +290,7 @@ export default function NuevaCategoriaPage() {
                 <Select
                   value={values.tallerId}
                   onValueChange={(value) => setValues({ ...values, tallerId: value })}
-                  disabled={loadingTalleres || (!!tallerIdParam && !!values.tallerId)}
+                  disabled={loadingTalleres}
                 >
                   <SelectTrigger id="tallerId">
                     <SelectValue placeholder="Selecciona un taller" />
@@ -271,11 +304,6 @@ export default function NuevaCategoriaPage() {
                   </SelectContent>
                 </Select>
                 {errors.tallerId && <p className="text-sm text-destructive mt-1">{errors.tallerId}</p>}
-                {tallerIdParam && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Taller asignado automáticamente
-                  </p>
-                )}
               </div>
             </div>
 

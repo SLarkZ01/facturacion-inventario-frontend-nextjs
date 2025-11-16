@@ -19,6 +19,18 @@ type ImagePreview = {
   file?: File
   preview: string
   isExisting?: boolean
+  publicId?: string  // ✅ Guardar publicId de imágenes existentes
+}
+
+type Medio = {
+  type?: string
+  publicId: string
+  url?: string
+  secure_url?: string
+  format?: string
+  width?: number
+  height?: number
+  order?: number
 }
 
 export default function EditarCategoriaPage() {
@@ -51,8 +63,9 @@ export default function EditarCategoriaPage() {
           // Cargar imágenes existentes
           if (data.listaMedios && Array.isArray(data.listaMedios)) {
             const existingImages: ImagePreview[] = data.listaMedios.map((medio: any) => ({
-              preview: medio.url || "",
+              preview: medio.secure_url || medio.url || "",
               isExisting: true,
+              publicId: medio.publicId, // ✅ Guardar publicId
             }))
             setImages(existingImages)
           }
@@ -110,7 +123,7 @@ export default function EditarCategoriaPage() {
     })
   }
 
-  async function uploadToCloudinary(file: File): Promise<string | null> {
+  async function uploadToCloudinary(file: File): Promise<Medio | null> {
     const formData = new FormData()
     formData.append("file", file)
 
@@ -122,7 +135,17 @@ export default function EditarCategoriaPage() {
 
       if (res.ok) {
         const data = await res.json()
-        return data.url
+        // ✅ CRÍTICO: Construir objeto Medio COMPLETO con publicId
+        const medio: Medio = {
+          type: data.type || file.type,
+          publicId: data.publicId, // ✅ CRÍTICO para poder eliminar de Cloudinary
+          url: data.url,
+          secure_url: data.url,
+          format: data.type?.split('/')[1],
+          width: data.width,
+          height: data.height,
+        }
+        return medio
       }
     } catch (error) {
       console.error("Error uploading to Cloudinary:", error)
@@ -137,25 +160,43 @@ export default function EditarCategoriaPage() {
     setIsSubmitting(true)
 
     try {
-      const uploadedUrls: Array<Record<string, unknown>> = []
+      const listaMedios: Medio[] = []
 
-      // Mantener imágenes existentes
-      for (const img of images) {
-        if (img.isExisting) {
-          uploadedUrls.push({ url: img.preview })
+      // Procesar imágenes
+      for (let i = 0; i < images.length; i++) {
+        const img = images[i]
+        
+        if (img.isExisting && img.publicId) {
+          // Mantener imágenes existentes con su publicId
+          listaMedios.push({
+            publicId: img.publicId,
+            url: img.preview,
+            secure_url: img.preview,
+            order: i,
+          })
         } else if (img.file) {
-          const url = await uploadToCloudinary(img.file)
-          if (url) {
-            uploadedUrls.push({ url, type: img.file.type })
+          // Subir nuevas imágenes
+          const medio = await uploadToCloudinary(img.file)
+          if (medio) {
+            medio.order = i
+            listaMedios.push(medio)
           }
         }
+      }
+
+      // ✅ Validar que todos los medios tienen publicId
+      const mediosSinPublicId = listaMedios.filter(m => !m.publicId)
+      if (mediosSinPublicId.length > 0) {
+        alert('Error: Algunas imágenes no tienen publicId. Intenta subirlas nuevamente.')
+        setIsSubmitting(false)
+        return
       }
 
       const payload = {
         nombre: values.nombre,
         descripcion: values.descripcion || undefined,
-        tallerId: values.tallerId, // Obligatorio
-        listaMedios: uploadedUrls.length > 0 ? uploadedUrls : undefined,
+        tallerId: values.tallerId, // ✅ REQUERIDO
+        listaMedios: listaMedios.length > 0 ? listaMedios : undefined, // ✅ Con publicId
       }
 
       const res = await fetch(`/api/categorias/${id}`, {

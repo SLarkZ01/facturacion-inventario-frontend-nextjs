@@ -115,7 +115,7 @@ export default async function CategoriasPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {categorias.map((c) => {
           const primerMedio = c.listaMedios?.[0]
-          const urlImagen = primerMedio?.url || primerMedio?.uri || ''
+          const urlImagen = primerMedio?.secure_url || primerMedio?.url || primerMedio?.uri || ''
           const tipoMedio = primerMedio?.type || ''
           const esImagen = tipoMedio ? tipoMedio.startsWith('image') : true
           

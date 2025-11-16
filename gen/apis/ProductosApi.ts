@@ -207,7 +207,7 @@ export class ProductosApi extends runtime.BaseAPI {
     }
 
     /**
-     * Elimina un producto por ID
+     * Elimina un producto por ID. **IMPORTANTE**: También elimina automáticamente las imágenes asociadas de Cloudinary (si existen en `listaMedios`).
      * Eliminar producto
      */
     async eliminarRaw(requestParameters: EliminarRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -241,7 +241,7 @@ export class ProductosApi extends runtime.BaseAPI {
     }
 
     /**
-     * Elimina un producto por ID
+     * Elimina un producto por ID. **IMPORTANTE**: También elimina automáticamente las imágenes asociadas de Cloudinary (si existen en `listaMedios`).
      * Eliminar producto
      */
     async eliminar(requestParameters: EliminarRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {

@@ -1,105 +1,200 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { Plus, Eye, Edit, Trash2, Search } from "lucide-react";
-import Link from "next/link";
+import Link from "next/link"
+import Image from "next/image"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Plus, Edit, ImageIcon, Package } from "lucide-react"
+import { listarProductosService, type Producto } from "@/lib/server/productosServer"
+import { listarMisTalleresService } from "@/lib/server/talleresServer"
+import { cookies } from "next/headers"
+import DeleteProductoButton from "./DeleteProductoButton"
 
-const sample = [
-  { id: 1, title: "Filtro de Aceite Premium", sku: "FLT-001-PRE", category: "Filtros", price: "$24.99", stock: 15, estado: "Activo" },
-  { id: 2, title: "Pastillas de Freno Delanteras", sku: "FRN-002-DEL", category: "Frenos", price: "$45.99", stock: 8, estado: "Activo" },
-  { id: 3, title: "Cadena de Transmisión 520", sku: "TRN-003-520", category: "Transmisión", price: "$89.99", stock: 12, estado: "Activo" },
-  { id: 4, title: "Kit de Embrague Completo", sku: "TRN-004-KIT", category: "Transmisión", price: "$159.99", stock: 5, estado: "Bajo Stock" },
-  { id: 5, title: "Bujías NGK Iridium", sku: "MTR-005-NGK", category: "Motor", price: "$18.99", stock: 25, estado: "Activo" },
-];
+async function getProductosData() {
+  const cookieStore = await cookies()
+  const accessToken = cookieStore.get("access_token")?.value
 
-export default function ProductosPage() {
+  if (!accessToken) {
+    return { productos: [], tallerId: null }
+  }
+
+  // Primero obtener los talleres del usuario
+  const talleresResult = await listarMisTalleresService(accessToken)
+  
+  console.log("📍 Talleres del usuario:", talleresResult)
+  
+  if (talleresResult.status !== 200 || !Array.isArray(talleresResult.body) || talleresResult.body.length === 0) {
+    return { productos: [], tallerId: null }
+  }
+
+  // Usar el primer taller del usuario
+  const primerTaller = talleresResult.body[0]
+  const tallerId = primerTaller.id?.toString()
+
+  console.log("🔑 TallerId seleccionado:", tallerId)
+
+  if (!tallerId) {
+    return { productos: [], tallerId: null }
+  }
+
+  // Listar productos del taller
+  const result = await listarProductosService({ tallerId }, accessToken)
+
+  console.log("📦 Productos obtenidos:", result)
+
+  if (result.status === 200) {
+    // Si es un array directo
+    if (Array.isArray(result.body)) {
+      console.log("✅ Retornando array directo con", result.body.length, "productos")
+      return { productos: result.body as Producto[], tallerId }
+    }
+    // Si es un objeto con campo "productos"
+    if (result.body && typeof result.body === "object" && "productos" in result.body) {
+      const prods = (result.body as any).productos as Producto[]
+      console.log("✅ Retornando desde campo 'productos' con", prods.length, "elementos")
+      return { productos: prods, tallerId }
+    }
+    // Si es una respuesta paginada con campo "content"
+    if (result.body && typeof result.body === "object" && "content" in result.body) {
+      const prods = (result.body as any).content as Producto[]
+      console.log("✅ Retornando desde campo 'content' con", prods.length, "elementos")
+      return { productos: prods, tallerId }
+    }
+  }
+
+  return { productos: [], tallerId }
+}
+
+export default async function ProductosPage() {
+  const { productos, tallerId } = await getProductosData()
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold">Gestión de Productos</h1>
-          <p className="text-sm text-gray-600 mt-1">Administra tu inventario de productos</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Administra tu inventario de productos
+          </p>
         </div>
 
         <div>
-          <Link href="/admin/productos/nuevo">
-            <Button variant="default" className="flex items-center gap-2">
+          {tallerId ? (
+            <Link href={`/admin/productos/nuevo?tallerId=${tallerId}`}>
+              <Button variant="default" className="flex items-center gap-2">
+                <Plus className="w-4 h-4" /> Nuevo Producto
+              </Button>
+            </Link>
+          ) : (
+            <Button variant="default" disabled className="flex items-center gap-2">
               <Plus className="w-4 h-4" /> Nuevo Producto
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {!tallerId && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <p className="text-sm text-yellow-800">
+            <strong>Atención:</strong> No tienes talleres asociados. Necesitas crear un taller
+            primero para poder gestionar productos.
+          </p>
+          <Link href="/admin/talleres" className="text-sm text-blue-600 hover:underline mt-2 inline-block">
+            Ir a Talleres →
+          </Link>
+        </div>
+      )}
+
+      {productos.length === 0 && tallerId && (
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+          <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-600 mb-2">No hay productos creados aún.</p>
+          <p className="text-sm text-gray-500 mb-4">
+            Comienza agregando tu primer producto al inventario
+          </p>
+          <Link href={`/admin/productos/nuevo?tallerId=${tallerId}`}>
+            <Button variant="default">
+              <Plus className="w-4 h-4 mr-2" /> Crear Primer Producto
             </Button>
           </Link>
         </div>
-      </div>
+      )}
 
-      <div className="bg-white rounded-lg shadow-sm border p-4">
-        <div className="flex gap-4 items-center mb-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input className="pl-10" placeholder="Buscar productos..." />
-            </div>
-          </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {productos.map((p) => {
+          const primerMedio = p.listaMedios?.[0]
+          const urlImagen = primerMedio?.secure_url || primerMedio?.url || primerMedio?.uri || ""
+          const tipoMedio = primerMedio?.type || ""
+          const esImagen = tipoMedio ? tipoMedio.startsWith("image") : true
 
-          <div>
-            <select className="rounded-md border px-3 py-2">
-              <option>Todas las categorías</option>
-            </select>
-          </div>
+          return (
+            <Card key={p.id} className="relative overflow-hidden hover:shadow-lg transition-shadow">
+              {urlImagen && esImagen && (
+                <div className="relative w-full h-48 bg-gray-100">
+                  <Image
+                    src={urlImagen}
+                    alt={p.nombre}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
+              )}
+              {urlImagen && !esImagen && (
+                <div className="relative w-full h-48 bg-gray-900 flex items-center justify-center">
+                  <video src={urlImagen} className="w-full h-full object-cover" muted />
+                </div>
+              )}
+              {!urlImagen && (
+                <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center">
+                  <ImageIcon className="w-12 h-12 text-gray-300" />
+                </div>
+              )}
 
-          <div>
-            <select className="rounded-md border px-3 py-2">
-              <option>Todos los estados</option>
-            </select>
-          </div>
-        </div>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between gap-3">
+                  <span className="font-medium truncate">{p.nombre}</span>
+                </CardTitle>
+                <div className="absolute right-4 top-52">
+                  {p.stock !== undefined && (
+                    <Badge variant={p.stock > 0 ? "default" : "destructive"}>
+                      Stock: {p.stock}
+                    </Badge>
+                  )}
+                </div>
+                <CardDescription className="line-clamp-2">
+                  {p.descripcion || "Sin descripción"}
+                </CardDescription>
+              </CardHeader>
 
-        <div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Producto</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead>Categoría</TableHead>
-                <TableHead>Precio</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sample.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell className="font-medium">{p.title}</TableCell>
-                  <TableCell className="text-sm text-gray-600">{p.sku}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{p.category}</Badge>
-                  </TableCell>
-                  <TableCell className="font-medium">{p.price}</TableCell>
-                  <TableCell className={p.stock <= 5 ? "text-red-500 font-medium" : "text-gray-700"}>{p.stock}</TableCell>
-                  <TableCell>
-                    {p.estado === "Activo" ? (
-                      <Badge className="bg-green-500 text-white" asChild>
-                        <span>Activo</span>
-                      </Badge>
-                    ) : (
-                      <Badge className="bg-red-500 text-white" asChild>
-                        <span>Bajo Stock</span>
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <button className="text-gray-600 hover:text-gray-900"><Eye className="w-4 h-4" /></button>
-                      <button className="text-gray-600 hover:text-gray-900"><Edit className="w-4 h-4" /></button>
-                      <button className="text-red-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              <CardContent className="space-y-2">
+                {p.precio !== undefined && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Precio:</span>
+                    <span className="text-lg font-bold text-green-600">
+                      ${p.precio.toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                {p.listaMedios && p.listaMedios.length > 1 && (
+                  <p className="text-xs text-muted-foreground">
+                    +{p.listaMedios.length - 1} {p.listaMedios.length === 2 ? "medio más" : "medios más"}
+                  </p>
+                )}
+              </CardContent>
+
+              <CardFooter className="flex gap-2">
+                <Link href={`/admin/productos/${p.id}`} className="flex-1">
+                  <Button variant="outline" className="w-full">
+                    <Edit className="w-4 h-4 mr-2" /> Editar
+                  </Button>
+                </Link>
+
+                <DeleteProductoButton productoId={p.id} productoNombre={p.nombre} />
+              </CardFooter>
+            </Card>
+          )
+        })}
       </div>
     </div>
-  );
+  )
 }
