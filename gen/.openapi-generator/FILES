@@ -10,6 +10,7 @@ apis/ProductosApi.ts
 apis/StockApi.ts
 apis/TallerMiembrosApi.ts
 apis/TalleresApi.ts
+apis/UploadsApi.ts
 apis/index.ts
 index.ts
 models/AlmacenRequest.ts
