@@ -10,7 +10,6 @@ export type CategoriaRequest = {
   idString?: string;
   nombre: string;
   descripcion?: string;
-  iconoRecurso?: number;
   tallerId: string; // OBLIGATORIO según backend actualizado
   mappedGlobalCategoryId?: string;
   listaMedios?: Array<{ url?: string; uri?: string; type?: string; [key: string]: any }>;
@@ -28,7 +27,6 @@ export type Categoria = {
   id: string;
   nombre: string;
   descripcion?: string;
-  iconoRecurso?: number;
   tallerId?: string;
   mappedGlobalCategoryId?: string;
   listaMedios?: Array<{ url?: string; uri?: string; type?: string; [key: string]: any }>;
