@@ -48,6 +48,12 @@ export interface ProductoRequest {
      * @type {number}
      * @memberof ProductoRequest
      */
+    tasaIva?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ProductoRequest
+     */
     stock?: number;
     /**
      * 
@@ -55,12 +61,6 @@ export interface ProductoRequest {
      * @memberof ProductoRequest
      */
     categoriaId?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ProductoRequest
-     */
-    imagenRecurso?: number;
     /**
      * 
      * @type {Array<{ [key: string]: object; }>}
@@ -103,9 +103,9 @@ export function ProductoRequestFromJSONTyped(json: any, ignoreDiscriminator: boo
         'nombre': json['nombre'],
         'descripcion': json['descripcion'] == null ? undefined : json['descripcion'],
         'precio': json['precio'] == null ? undefined : json['precio'],
+        'tasaIva': json['tasaIva'] == null ? undefined : json['tasaIva'],
         'stock': json['stock'] == null ? undefined : json['stock'],
         'categoriaId': json['categoriaId'] == null ? undefined : json['categoriaId'],
-        'imagenRecurso': json['imagenRecurso'] == null ? undefined : json['imagenRecurso'],
         'listaMedios': json['listaMedios'] == null ? undefined : json['listaMedios'],
         'specs': json['specs'] == null ? undefined : json['specs'],
         'tallerId': json['tallerId'] == null ? undefined : json['tallerId'],
@@ -122,9 +122,9 @@ export function ProductoRequestToJSON(value?: ProductoRequest | null): any {
         'nombre': value['nombre'],
         'descripcion': value['descripcion'],
         'precio': value['precio'],
+        'tasaIva': value['tasaIva'],
         'stock': value['stock'],
         'categoriaId': value['categoriaId'],
-        'imagenRecurso': value['imagenRecurso'],
         'listaMedios': value['listaMedios'],
         'specs': value['specs'],
         'tallerId': value['tallerId'],

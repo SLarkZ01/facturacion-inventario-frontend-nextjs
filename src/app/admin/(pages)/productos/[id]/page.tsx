@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import Image from "next/image"
+import Loader from "@/components/ui/loading"
 
 // ===================================================================
 // COMPONENTE: Editor de Especificaciones Técnicas
@@ -105,6 +106,7 @@ type Producto = {
   nombre: string
   descripcion?: string
   precio?: number
+  tasaIva?: number
   stock?: number
   tallerId?: string
   categoriaId?: string
@@ -148,10 +150,14 @@ export default function EditarProductoPage() {
 
         if (productoRes.ok) {
           const data = await productoRes.json()
-          setProducto(data)
+          
+          // El API devuelve { producto: {...} } en lugar del producto directamente
+          const productoData = data.producto || data
+          setProducto(productoData)
+          
           // ✅ Cargar especificaciones técnicas si existen
-          if (data.specs) {
-            setSpecs(data.specs)
+          if (productoData.specs) {
+            setSpecs(productoData.specs)
           }
         }
 
@@ -175,7 +181,7 @@ export default function EditarProductoPage() {
     }
 
     async function loadCategorias() {
-      if (!producto) return // Guard clause adicional
+      if (!producto) return
       
       setLoadingCategorias(true)
       try {
@@ -253,11 +259,12 @@ export default function EditarProductoPage() {
 
       const payload = {
         nombre: producto.nombre,
-        descripcion: producto.descripcion,
+        descripcion: producto.descripcion || undefined,
         precio: producto.precio,
+        tasaIva: producto.tasaIva,
         stock: producto.stock,
         tallerId: producto.tallerId, // ✅ IMPORTANTE
-        categoriaId: producto.categoriaId,
+        categoriaId: producto.categoriaId || undefined,
         listaMedios: allMedios.length > 0 ? allMedios : undefined, // ✅ Con publicId
         specs: Object.keys(specs).length > 0 ? specs : undefined, // ✅ Especificaciones técnicas
       }
@@ -286,7 +293,7 @@ export default function EditarProductoPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>Cargando...</p>
+        <Loader />
       </div>
     )
   }
@@ -317,13 +324,13 @@ export default function EditarProductoPage() {
         </div>
       </div>
 
-      <form onSubmit={onSubmit} className="bg-white rounded-2xl border p-6 shadow-sm space-y-6">
+      <form key={producto.id} onSubmit={onSubmit} className="bg-white rounded-2xl border p-6 shadow-sm space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2">
             <Label htmlFor="nombre">Nombre *</Label>
             <Input
               id="nombre"
-              value={producto.nombre}
+              value={producto.nombre || ""}
               onChange={(e) => setProducto({ ...producto, nombre: e.target.value })}
             />
           </div>
@@ -344,8 +351,20 @@ export default function EditarProductoPage() {
               id="precio"
               type="number"
               step="0.01"
-              value={producto.precio || ""}
-              onChange={(e) => setProducto({ ...producto, precio: Number(e.target.value) })}
+              value={producto.precio ?? ""}
+              onChange={(e) => setProducto({ ...producto, precio: e.target.value ? Number(e.target.value) : undefined })}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="tasaIva">Tasa IVA (%)</Label>
+            <Input
+              id="tasaIva"
+              type="number"
+              step="0.01"
+              placeholder="Ej: 19"
+              value={producto.tasaIva ?? ""}
+              onChange={(e) => setProducto({ ...producto, tasaIva: e.target.value ? Number(e.target.value) : undefined })}
             />
           </div>
 
@@ -354,19 +373,19 @@ export default function EditarProductoPage() {
             <Input
               id="stock"
               type="number"
-              value={producto.stock || ""}
-              onChange={(e) => setProducto({ ...producto, stock: Number(e.target.value) })}
+              value={producto.stock ?? ""}
+              onChange={(e) => setProducto({ ...producto, stock: e.target.value ? Number(e.target.value) : undefined })}
             />
           </div>
 
           <div>
             <Label>Taller</Label>
             <Select
-              value={producto.tallerId}
+              value={producto.tallerId?.toString() || ""}
               onValueChange={(value) => setProducto({ ...producto, tallerId: value, categoriaId: "" })}
             >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Selecciona un taller" />
               </SelectTrigger>
               <SelectContent>
                 {talleres.map((t) => (
@@ -381,7 +400,7 @@ export default function EditarProductoPage() {
           <div>
             <Label>Categoría</Label>
             <Select
-              value={producto.categoriaId}
+              value={producto.categoriaId || ""}
               onValueChange={(value) => setProducto({ ...producto, categoriaId: value })}
               disabled={loadingCategorias}
             >
@@ -403,6 +422,93 @@ export default function EditarProductoPage() {
         <div className="border-t pt-6">
           <h4 className="font-medium mb-3">Especificaciones Técnicas</h4>
           <SpecsEditor specs={specs} onChange={setSpecs} />
+        </div>
+
+        {/* Imágenes del Producto */}
+        <div className="border-t pt-6">
+          <h4 className="font-medium mb-3">Imágenes del Producto</h4>
+          
+          {/* Imágenes Existentes */}
+          {producto.listaMedios && producto.listaMedios.length > 0 && (
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">Imágenes actuales:</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {producto.listaMedios.map((medio, index) => (
+                  <div key={index} className="relative group">
+                    <div className="relative w-full h-32 rounded-lg overflow-hidden border">
+                      <Image
+                        src={medio.url || medio.secure_url || ""}
+                        alt={`Imagen ${index + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newListaMedios = producto.listaMedios?.filter((_, i) => i !== index)
+                        setProducto({ ...producto, listaMedios: newListaMedios })
+                      }}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Nuevas Imágenes para Subir */}
+          <div>
+            <Label htmlFor="images">Agregar nuevas imágenes</Label>
+            <Input
+              id="images"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => {
+                const files = Array.from(e.target.files || [])
+                const newImages = files.map((file) => ({
+                  file,
+                  preview: URL.createObjectURL(file),
+                }))
+                setImages([...images, ...newImages])
+              }}
+              className="mt-2"
+            />
+            
+            {/* Preview de Nuevas Imágenes */}
+            {images.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                {images.map((img, index) => (
+                  <div key={index} className="relative group">
+                    <div className="relative w-full h-32 rounded-lg overflow-hidden border border-dashed border-blue-500">
+                      <Image
+                        src={img.preview}
+                        alt={`Nueva imagen ${index + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        URL.revokeObjectURL(img.preview)
+                        setImages(images.filter((_, i) => i !== index))
+                      }}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                    <div className="absolute bottom-1 left-1 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                      Nueva
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end gap-3">

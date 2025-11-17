@@ -22,16 +22,28 @@ import {
     FacturaRequestToJSON,
 } from '../models/index';
 
+export interface AnularFacturaRequest {
+    id: string;
+}
+
 export interface CheckoutRequest {
     requestBody: { [key: string]: object; };
 }
 
-export interface CrearFacturaRequest {
-    requestBody: { [key: string]: object; };
+export interface CrearBorradorRequest {
+    facturaRequest: FacturaRequest;
 }
 
-export interface CrearFacturaDTORequest {
+export interface CrearFacturaRequest {
     facturaRequest: FacturaRequest;
+}
+
+export interface DescargarPdfRequest {
+    id: string;
+}
+
+export interface EmitirBorradorRequest {
+    id: string;
 }
 
 export interface GetFacturaRequest {
@@ -52,10 +64,53 @@ export interface ListarPorUsuarioRequest {
 export class FacturasApi extends runtime.BaseAPI {
 
     /**
-     * Crea una factura a partir de un carrito del usuario autenticado. Convierte los items del carrito en una factura y actualiza el stock.
+     * Anula una factura emitida (NO devuelve stock automáticamente)
+     * Anular factura
+     */
+    async anularFacturaRaw(requestParameters: AnularFacturaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling anularFactura().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/facturas/{id}/anular`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Anula una factura emitida (NO devuelve stock automáticamente)
+     * Anular factura
+     */
+    async anularFactura(requestParameters: AnularFacturaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.anularFacturaRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Crea factura EMITIDA desde carrito. SIEMPRE descuenta stock y calcula precios/IVA desde productos.
      * Checkout carrito
      */
-    async checkoutRaw(requestParameters: CheckoutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async checkoutRaw(requestParameters: CheckoutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         if (requestParameters['requestBody'] == null) {
             throw new runtime.RequiredError(
                 'requestBody',
@@ -85,26 +140,73 @@ export class FacturasApi extends runtime.BaseAPI {
             body: requestParameters['requestBody'],
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
-     * Crea una factura a partir de un carrito del usuario autenticado. Convierte los items del carrito en una factura y actualiza el stock.
+     * Crea factura EMITIDA desde carrito. SIEMPRE descuenta stock y calcula precios/IVA desde productos.
      * Checkout carrito
      */
-    async checkout(requestParameters: CheckoutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.checkoutRaw(requestParameters, initOverrides);
+    async checkout(requestParameters: CheckoutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.checkoutRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
-     * Crea una factura usando un payload genérico
-     * Crear factura (map)
+     * Crea factura sin descontar stock (para cotizaciones). Usar POST /facturas/{id}/emitir para emitirla.
+     * Crear factura en BORRADOR
      */
-    async crearFacturaRaw(requestParameters: CrearFacturaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['requestBody'] == null) {
+    async crearBorradorRaw(requestParameters: CrearBorradorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['facturaRequest'] == null) {
             throw new runtime.RequiredError(
-                'requestBody',
-                'Required parameter "requestBody" was null or undefined when calling crearFactura().'
+                'facturaRequest',
+                'Required parameter "facturaRequest" was null or undefined when calling crearBorrador().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/facturas/borrador`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: FacturaRequestToJSON(requestParameters['facturaRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Crea factura sin descontar stock (para cotizaciones). Usar POST /facturas/{id}/emitir para emitirla.
+     * Crear factura en BORRADOR
+     */
+    async crearBorrador(requestParameters: CrearBorradorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.crearBorradorRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Crea y emite una factura definitiva. SIEMPRE descuenta stock y calcula precios/IVA desde productos. No acepta precios del cliente.
+     * Crear factura EMITIDA
+     */
+    async crearFacturaRaw(requestParameters: CrearFacturaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['facturaRequest'] == null) {
+            throw new runtime.RequiredError(
+                'facturaRequest',
+                'Required parameter "facturaRequest" was null or undefined when calling crearFactura().'
             );
         }
 
@@ -127,37 +229,35 @@ export class FacturasApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters['requestBody'],
+            body: FacturaRequestToJSON(requestParameters['facturaRequest']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
-     * Crea una factura usando un payload genérico
-     * Crear factura (map)
+     * Crea y emite una factura definitiva. SIEMPRE descuenta stock y calcula precios/IVA desde productos. No acepta precios del cliente.
+     * Crear factura EMITIDA
      */
-    async crearFactura(requestParameters: CrearFacturaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.crearFacturaRaw(requestParameters, initOverrides);
+    async crearFactura(requestParameters: CrearFacturaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.crearFacturaRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
-     * Crea una factura usando DTO tipado
-     * Crear factura (DTO)
+     * Descargar PDF de factura con IVA
      */
-    async crearFacturaDTORaw(requestParameters: CrearFacturaDTORequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['facturaRequest'] == null) {
+    async descargarPdfRaw(requestParameters: DescargarPdfRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+        if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
-                'facturaRequest',
-                'Required parameter "facturaRequest" was null or undefined when calling crearFacturaDTO().'
+                'id',
+                'Required parameter "id" was null or undefined when calling descargarPdf().'
             );
         }
 
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
 
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
@@ -168,28 +268,74 @@ export class FacturasApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/facturas/dto`,
-            method: 'POST',
+            path: `/api/facturas/{id}/pdf`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-            body: FacturaRequestToJSON(requestParameters['facturaRequest']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<string>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
     }
 
     /**
-     * Crea una factura usando DTO tipado
-     * Crear factura (DTO)
+     * Descargar PDF de factura con IVA
      */
-    async crearFacturaDTO(requestParameters: CrearFacturaDTORequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.crearFacturaDTORaw(requestParameters, initOverrides);
+    async descargarPdf(requestParameters: DescargarPdfRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+        const response = await this.descargarPdfRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Emite un borrador (descuenta stock y cambia estado a EMITIDA)
+     * Emitir borrador
+     */
+    async emitirBorradorRaw(requestParameters: EmitirBorradorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling emitirBorrador().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/facturas/{id}/emitir`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Emite un borrador (descuenta stock y cambia estado a EMITIDA)
+     * Emitir borrador
+     */
+    async emitirBorrador(requestParameters: EmitirBorradorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.emitirBorradorRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Obtener factura por id
      */
-    async getFacturaRaw(requestParameters: GetFacturaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async getFacturaRaw(requestParameters: GetFacturaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -216,20 +362,21 @@ export class FacturasApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
      * Obtener factura por id
      */
-    async getFactura(requestParameters: GetFacturaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.getFacturaRaw(requestParameters, initOverrides);
+    async getFactura(requestParameters: GetFacturaRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.getFacturaRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Obtener factura por número
      */
-    async getPorNumeroRaw(requestParameters: GetPorNumeroRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async getPorNumeroRaw(requestParameters: GetPorNumeroRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         if (requestParameters['numero'] == null) {
             throw new runtime.RequiredError(
                 'numero',
@@ -256,20 +403,21 @@ export class FacturasApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
      * Obtener factura por número
      */
-    async getPorNumero(requestParameters: GetPorNumeroRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.getPorNumeroRaw(requestParameters, initOverrides);
+    async getPorNumero(requestParameters: GetPorNumeroRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.getPorNumeroRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Listar facturas por usuario
      */
-    async listarPorUsuarioRaw(requestParameters: ListarPorUsuarioRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async listarPorUsuarioRaw(requestParameters: ListarPorUsuarioRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         const queryParameters: any = {};
 
         if (requestParameters['userId'] != null) {
@@ -293,14 +441,15 @@ export class FacturasApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
      * Listar facturas por usuario
      */
-    async listarPorUsuario(requestParameters: ListarPorUsuarioRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.listarPorUsuarioRaw(requestParameters, initOverrides);
+    async listarPorUsuario(requestParameters: ListarPorUsuarioRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.listarPorUsuarioRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }

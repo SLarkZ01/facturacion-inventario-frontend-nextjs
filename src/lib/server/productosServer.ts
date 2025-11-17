@@ -11,9 +11,9 @@ export type ProductoRequest = {
   nombre: string;
   descripcion?: string;
   precio?: number;
+  tasaIva?: number;
   stock?: number;
   categoriaId?: string;
-  imagenRecurso?: number;
   listaMedios?: Array<{ url?: string; uri?: string; type?: string; [key: string]: any }>;
   specs?: { [key: string]: string };
   tallerId?: string;
@@ -32,9 +32,9 @@ export type Producto = {
   nombre: string;
   descripcion?: string;
   precio?: number;
+  tasaIva?: number;
   stock?: number;
   categoriaId?: string;
-  imagenRecurso?: number;
   listaMedios?: Array<{ url?: string; uri?: string; type?: string; [key: string]: any }>;
   specs?: { [key: string]: string };
   tallerId?: string;

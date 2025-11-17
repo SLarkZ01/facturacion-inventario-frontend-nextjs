@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { ChevronLeft, Save, Upload, X } from "lucide-react"
 import { useRouter, useParams } from "next/navigation"
 import Image from "next/image"
-import { Skeleton } from "@/components/ui/skeleton"
+import Loader from "@/components/ui/loading"
 
 type FormValues = {
   nombre: string
@@ -54,15 +54,19 @@ export default function EditarCategoriaPage() {
         const res = await fetch(`/api/categorias/${id}`)
         if (res.ok) {
           const data = await res.json()
+          
+          // El API devuelve { categoria: {...} } en lugar de la categoría directamente
+          const categoriaData = data.categoria || data
+          
           setValues({
-            nombre: data.nombre || "",
-            descripcion: data.descripcion || "",
-            tallerId: data.tallerId || "",
+            nombre: categoriaData.nombre || "",
+            descripcion: categoriaData.descripcion || "",
+            tallerId: categoriaData.tallerId || "",
           })
 
           // Cargar imágenes existentes
-          if (data.listaMedios && Array.isArray(data.listaMedios)) {
-            const existingImages: ImagePreview[] = data.listaMedios.map((medio: any) => ({
+          if (categoriaData.listaMedios && Array.isArray(categoriaData.listaMedios)) {
+            const existingImages: ImagePreview[] = categoriaData.listaMedios.map((medio: any) => ({
               preview: medio.secure_url || medio.url || "",
               isExisting: true,
               publicId: medio.publicId, // ✅ Guardar publicId
@@ -222,22 +226,8 @@ export default function EditarCategoriaPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 p-6">
-        <div className="flex items-start gap-4">
-          <Skeleton className="w-9 h-9 rounded-md" />
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <Skeleton className="h-96 rounded-2xl" />
-          </div>
-          <div>
-            <Skeleton className="h-64 rounded-2xl" />
-          </div>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader />
       </div>
     )
   }
