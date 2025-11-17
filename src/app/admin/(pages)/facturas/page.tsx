@@ -1,143 +1,252 @@
-"use client"
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Plus, FileText, Download, Eye } from "lucide-react";
+import { listarFacturasService, type Factura } from "@/lib/server/facturasServer";
+import { cookies } from "next/headers";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-import { useMemo, useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Eye, Download, Send } from "lucide-react"
+/**
+ * Función para obtener todas las facturas
+ */
+async function getFacturasData() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
 
-type Factura = {
-  id: string
-  numero: string
-  orden?: string
-  cliente: string
-  email?: string
-  fecha: string
-  vencimiento: string
-  total: string
-  estado: "Pagada" | "Pendiente" | "Vencida"
+  if (!accessToken) {
+    return { facturas: [] };
+  }
+
+  const result = await listarFacturasService({}, accessToken);
+
+  if (result.status === 200) {
+    // Extraer datos correctamente (el backend puede envolver la respuesta)
+    if (Array.isArray(result.body)) {
+      return { facturas: result.body as Factura[] };
+    }
+    if (result.body && typeof result.body === "object" && "facturas" in result.body) {
+      return { facturas: (result.body as any).facturas as Factura[] };
+    }
+  }
+
+  return { facturas: [] };
 }
 
-const sample: Factura[] = [
-  { id: "1", numero: "INV-2025-001", orden: "ORD-001", cliente: "Juan Pérez", email: "juan@example.com", fecha: "2025-01-15", vencimiento: "2025-02-14", total: "$145.99", estado: "Pagada" },
-  { id: "2", numero: "INV-2025-002", orden: "ORD-002", cliente: "María García", email: "maria@example.com", fecha: "2025-01-15", vencimiento: "2025-02-14", total: "$89.50", estado: "Pendiente" },
-  { id: "3", numero: "INV-2025-003", orden: "ORD-003", cliente: "Carlos López", email: "carlos@example.com", fecha: "2025-01-14", vencimiento: "2025-02-13", total: "$234.00", estado: "Pagada" },
-  { id: "4", numero: "INV-2025-004", orden: "ORD-004", cliente: "Ana Martínez", email: "ana@example.com", fecha: "2025-01-14", vencimiento: "2025-02-13", total: "$67.25", estado: "Pagada" },
-  { id: "5", numero: "INV-2025-005", orden: "ORD-005", cliente: "Luis Rodríguez", email: "luis@example.com", fecha: "2025-01-13", vencimiento: "2025-02-12", total: "$189.99", estado: "Vencida" },
-]
+/**
+ * Componente para el badge de estado
+ */
+function EstadoBadge({ estado }: { estado: string }) {
+  const config = {
+    BORRADOR: { color: "bg-gray-100 text-gray-800 border-gray-300", label: "Borrador" },
+    EMITIDA: { color: "bg-green-100 text-green-800 border-green-300", label: "Emitida" },
+    ANULADA: { color: "bg-red-100 text-red-800 border-red-300", label: "Anulada" },
+  };
 
-export default function FacturasPage() {
-  const [q, setQ] = useState("")
-  const [estadoFilter, setEstadoFilter] = useState<string>("Todos")
-  const [rows] = useState<Factura[]>(sample)
+  const { color, label } = config[estado as keyof typeof config] || config.BORRADOR;
 
-  const filtered = useMemo(() => {
-    return rows.filter((r) => {
-      if (estadoFilter !== "Todos" && r.estado !== estadoFilter) return false
-      if (!q) return true
-      const term = q.toLowerCase()
-      return (
-        r.numero.toLowerCase().includes(term) ||
-        (r.orden || "").toLowerCase().includes(term) ||
-        r.cliente.toLowerCase().includes(term) ||
-        (r.email || "").toLowerCase().includes(term)
-      )
-    })
-  }, [rows, q, estadoFilter])
+  return (
+    <Badge className={`${color} border font-medium`} variant="outline">
+      {label}
+    </Badge>
+  );
+}
 
-  function exportAll() {
-    alert("Exportando todas las facturas... (mock)")
-  }
+/**
+ * Formatea números a formato de moneda colombiana
+ */
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+  }).format(value);
+}
 
-  function download(f: Factura) {
-    alert(`Descargando factura ${f.numero} (mock)`)
-  }
+/**
+ * Formatea fechas
+ */
+function formatDate(date: string | undefined): string {
+  if (!date) return "N/A";
+  return new Date(date).toLocaleDateString("es-CO", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
-  function sendInvoice(f: Factura) {
-    alert(`Enviando factura ${f.numero} a ${f.email} (mock)`)
-  }
+export default async function FacturasPage() {
+  const { facturas } = await getFacturasData();
+
+  // Ordenar facturas por fecha (más recientes primero)
+  const facturasOrdenadas = [...facturas].sort((a, b) => {
+    const dateA = new Date(a.createdAt || "");
+    const dateB = new Date(b.createdAt || "");
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  // Calcular estadísticas
+  const totalEmitidas = facturas.filter((f) => f.estado === "EMITIDA").length;
+  const totalBorradores = facturas.filter((f) => f.estado === "BORRADOR").length;
+  const totalAnuladas = facturas.filter((f) => f.estado === "ANULADA").length;
+  const totalIngresos = facturas
+    .filter((f) => f.estado === "EMITIDA")
+    .reduce((sum, f) => sum + (f.total || 0), 0);
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold">Gestión de Facturas</h1>
-          <p className="text-sm text-muted-foreground mt-1">Administra todas las facturas de tu tienda</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Administra las facturas de venta y cotizaciones
+          </p>
         </div>
 
-        <div>
-          <Button variant="default" className="flex items-center gap-2" onClick={exportAll}>
-            <Download className="w-4 h-4" /> Exportar Todo
+        <Link href="/admin/facturas/nueva">
+          <Button variant="default" className="flex items-center gap-2">
+            <Plus className="w-4 h-4" /> Nueva Factura
           </Button>
-        </div>
+        </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border p-4">
-        <div className="flex gap-4 items-center mb-4">
-          <div className="flex-1">
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar facturas..." className="w-full" />
-          </div>
+      {/* Estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Facturas
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{facturas.length}</div>
+          </CardContent>
+        </Card>
 
-          <div>
-            <select className="rounded-md border px-3 py-2" value={estadoFilter} onChange={(e) => setEstadoFilter(e.target.value)}>
-              <option value="Todos">Todos los estados</option>
-              <option value="Pagada">Pagada</option>
-              <option value="Pendiente">Pendiente</option>
-              <option value="Vencida">Vencida</option>
-            </select>
-          </div>
-        </div>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Emitidas
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{totalEmitidas}</div>
+          </CardContent>
+        </Card>
 
-        <div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Factura</TableHead>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Fecha</TableHead>
-                <TableHead>Vencimiento</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell className="font-medium">
-                    <div>{r.numero}</div>
-                    <div className="text-xs text-muted-foreground">{r.orden}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{r.cliente}</div>
-                    <div className="text-xs text-muted-foreground">{r.email}</div>
-                  </TableCell>
-                  <TableCell>{r.fecha}</TableCell>
-                  <TableCell>{r.vencimiento}</TableCell>
-                  <TableCell className="font-semibold">{r.total}</TableCell>
-                  <TableCell>
-                    {r.estado === "Pagada" ? (
-                      <Badge className="bg-green-500 text-white">Pagada</Badge>
-                    ) : r.estado === "Pendiente" ? (
-                      <Badge className="bg-yellow-500 text-white">Pendiente</Badge>
-                    ) : (
-                      <Badge className="bg-red-500 text-white">Vencida</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <button title="Ver" className="text-gray-600 hover:text-gray-900"><Eye className="w-4 h-4" /></button>
-                      <button title="Descargar" onClick={() => download(r)} className="text-gray-600 hover:text-gray-900"><Download className="w-4 h-4" /></button>
-                      <button title="Enviar" onClick={() => sendInvoice(r)} className="text-gray-600 hover:text-gray-900"><Send className="w-4 h-4" /></button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Borradores
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-gray-600">{totalBorradores}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Ingresos Totales
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">
+              {formatCurrency(totalIngresos)}
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Tabla de facturas */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Listado de Facturas</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {facturasOrdenadas.length === 0 ? (
+            <div className="text-center py-12">
+              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500 mb-2">No hay facturas registradas</p>
+              <p className="text-sm text-gray-400 mb-4">
+                Crea tu primera factura para comenzar
+              </p>
+              <Link href="/admin/facturas/nueva">
+                <Button variant="outline" size="sm">
+                  <Plus className="w-4 h-4 mr-2" /> Nueva Factura
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Número</TableHead>
+                    <TableHead>Cliente</TableHead>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead className="text-right">Subtotal</TableHead>
+                    <TableHead className="text-right">IVA</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {facturasOrdenadas.map((factura) => (
+                    <TableRow key={factura.id}>
+                      <TableCell className="font-medium">
+                        {factura.numeroFactura}
+                      </TableCell>
+                      <TableCell>
+                        {factura.cliente?.nombre || "Cliente General"}
+                      </TableCell>
+                      <TableCell>{formatDate(factura.fechaEmision || factura.createdAt)}</TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(factura.subtotal || 0)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(factura.totalIva || 0)}
+                      </TableCell>
+                      <TableCell className="text-right font-semibold">
+                        {formatCurrency(factura.total)}
+                      </TableCell>
+                      <TableCell>
+                        <EstadoBadge estado={factura.estado} />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link href={`/admin/facturas/${factura.id}`}>
+                            <Button variant="ghost" size="sm">
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </Link>
+                          {factura.estado === "EMITIDA" && (
+                            <a href={`/api/facturas/${factura.id}/pdf`} download>
+                              <Button variant="ghost" size="sm">
+                                <Download className="w-4 h-4" />
+                              </Button>
+                            </a>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
 }
