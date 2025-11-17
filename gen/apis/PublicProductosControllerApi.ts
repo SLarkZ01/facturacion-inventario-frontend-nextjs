@@ -32,7 +32,7 @@ export interface ListarRequest {
 export class PublicProductosControllerApi extends runtime.BaseAPI {
 
     /**
-     * Devuelve los detalles completos de un producto con `totalStock` agregado y `stockByAlmacen`.  Este endpoint no requiere autenticación. 
+     * Devuelve los detalles completos de un producto con `totalStock` agregado, `stockByAlmacen` y `tasaIva`.  **IMPORTANTE para App Android**: El campo `tasaIva` se usa para mostrar el precio con IVA incluido y calcular el total al agregar al carrito. Ejemplo: precio=$25.000, tasaIva=19% → Precio final=$29.750  Este endpoint no requiere autenticación. 
      * Obtener producto por ID (público)
      */
     async getProductoRaw(requestParameters: GetProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -66,7 +66,7 @@ export class PublicProductosControllerApi extends runtime.BaseAPI {
     }
 
     /**
-     * Devuelve los detalles completos de un producto con `totalStock` agregado y `stockByAlmacen`.  Este endpoint no requiere autenticación. 
+     * Devuelve los detalles completos de un producto con `totalStock` agregado, `stockByAlmacen` y `tasaIva`.  **IMPORTANTE para App Android**: El campo `tasaIva` se usa para mostrar el precio con IVA incluido y calcular el total al agregar al carrito. Ejemplo: precio=$25.000, tasaIva=19% → Precio final=$29.750  Este endpoint no requiere autenticación. 
      * Obtener producto por ID (público)
      */
     async getProducto(requestParameters: GetProductoRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -74,7 +74,7 @@ export class PublicProductosControllerApi extends runtime.BaseAPI {
     }
 
     /**
-     * Devuelve productos paginados para clientes públicos (sin autenticación).  Soporta: - Búsqueda por nombre con `q` - Filtrado por `categoriaId` - Paginación con `page` y `size`  La respuesta expone `totalStock` agregado y `stockByAlmacen` cuando está disponible. 
+     * Devuelve productos paginados para clientes públicos (sin autenticación).  **NUEVO (v2.0)**: La respuesta ahora incluye `tasaIva` (tasa de IVA en %) para cada producto. Este campo se usa para calcular el IVA al momento de comprar (checkout).  Soporta: - Búsqueda por nombre con `q` - Filtrado por `categoriaId` - Paginación con `page` y `size`  La respuesta expone `totalStock` agregado, `stockByAlmacen` y `tasaIva` cuando está disponible. 
      * Listar productos (público)
      */
     async listarRaw(requestParameters: ListarRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -117,7 +117,7 @@ export class PublicProductosControllerApi extends runtime.BaseAPI {
     }
 
     /**
-     * Devuelve productos paginados para clientes públicos (sin autenticación).  Soporta: - Búsqueda por nombre con `q` - Filtrado por `categoriaId` - Paginación con `page` y `size`  La respuesta expone `totalStock` agregado y `stockByAlmacen` cuando está disponible. 
+     * Devuelve productos paginados para clientes públicos (sin autenticación).  **NUEVO (v2.0)**: La respuesta ahora incluye `tasaIva` (tasa de IVA en %) para cada producto. Este campo se usa para calcular el IVA al momento de comprar (checkout).  Soporta: - Búsqueda por nombre con `q` - Filtrado por `categoriaId` - Paginación con `page` y `size`  La respuesta expone `totalStock` agregado, `stockByAlmacen` y `tasaIva` cuando está disponible. 
      * Listar productos (público)
      */
     async listar(requestParameters: ListarRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
