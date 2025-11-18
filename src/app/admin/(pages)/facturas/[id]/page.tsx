@@ -287,21 +287,33 @@ export default function FacturaDetallePage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <span className="text-sm text-muted-foreground">Nombre:</span>
+              <span className="text-sm text-muted-foreground">Nombre completo:</span>
               <p className="font-semibold">
-                {factura.cliente?.nombre || "Cliente General"}
+                {factura.cliente ? `${factura.cliente.nombre} ${factura.cliente.apellido}` : "Cliente General"}
               </p>
             </div>
-            {factura.cliente?.documento && (
+            {factura.cliente?.username && (
               <div>
-                <span className="text-sm text-muted-foreground">Documento:</span>
-                <p className="font-medium">{factura.cliente.documento}</p>
+                <span className="text-sm text-muted-foreground">Usuario:</span>
+                <p className="font-medium">{factura.cliente.username}</p>
               </div>
             )}
-            {factura.cliente?.direccion && (
+            {factura.cliente?.email && (
               <div>
-                <span className="text-sm text-muted-foreground">Dirección:</span>
-                <p className="font-medium">{factura.cliente.direccion}</p>
+                <span className="text-sm text-muted-foreground">Email:</span>
+                <p className="font-medium">{factura.cliente.email}</p>
+              </div>
+            )}
+            {factura.cliente?.fechaCreacion && (
+              <div>
+                <span className="text-sm text-muted-foreground">Cliente desde:</span>
+                <p className="font-medium">
+                  {new Date(factura.cliente.fechaCreacion).toLocaleDateString("es-CO", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
               </div>
             )}
           </CardContent>

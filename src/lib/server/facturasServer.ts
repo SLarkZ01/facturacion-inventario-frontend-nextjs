@@ -29,17 +29,32 @@ export type FacturaItemResponse = {
 };
 
 /**
- * Tipo para datos del cliente
+ * Tipo para datos del cliente (snapshot embebido en factura)
+ * Según cambios del backend - ya NO incluye documento, direccion, roles, activo
  */
 export type Cliente = {
-  nombre?: string;
-  documento?: string;
-  direccion?: string;
+  id: string;
+  username: string;
+  email: string;
+  nombre: string;
+  apellido: string;
+  fechaCreacion: string; // ISO 8601
 };
+
+/**
+ * Tipo parcial para cliente (para formularios o cuando no todos los campos están disponibles)
+ */
+export type ClienteParcial = Partial<Cliente>;
 
 /**
  * Tipo para la solicitud de creación de factura
  * Solo se envían productoId y cantidad; el backend calcula precios e IVA
+ * 
+ * IMPORTANTE sobre el cliente:
+ * - Puedes enviar `clienteId` (String): el backend buscará el usuario y creará el snapshot
+ * - Puedes enviar `cliente` (objeto): el backend guardará ese snapshot directamente
+ * - Si envías ambos, el backend prioriza el objeto `cliente` embebido
+ * - El cliente embebido es un snapshot histórico (no se actualiza si el usuario cambia)
  */
 export type FacturaRequest = {
   numeroFactura?: string;

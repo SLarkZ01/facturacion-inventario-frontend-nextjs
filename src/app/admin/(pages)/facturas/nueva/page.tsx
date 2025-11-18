@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import Loader from "@/components/ui/loading";
+import { ClientSearch, type ClientSearchResult } from "../components/ClientSearch";
 
 type Producto = {
   id: string;
@@ -51,10 +52,8 @@ export default function NuevaFacturaPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [items, setItems] = useState<ItemFactura[]>([]);
   
-  // Datos del cliente
-  const [clienteNombre, setClienteNombre] = useState("");
-  const [clienteDocumento, setClienteDocumento] = useState("");
-  const [clienteDireccion, setClienteDireccion] = useState("");
+  // Datos del cliente - ahora usa autocompletado
+  const [selectedClient, setSelectedClient] = useState<ClientSearchResult | null>(null);
 
   // Producto seleccionado para agregar
   const [productoSeleccionado, setProductoSeleccionado] = useState("");
@@ -169,19 +168,20 @@ export default function NuevaFacturaPage() {
     setGuardando(true);
 
     try {
-      // El backend ahora calcula automáticamente precios e IVA
+      // El backend calcula automáticamente precios e IVA
       // Solo enviamos productoId y cantidad
-      const payload = {
-        cliente: clienteNombre ? {
-          nombre: clienteNombre,
-          documento: clienteDocumento,
-          direccion: clienteDireccion,
-        } : undefined,
+      const payload: any = {
         items: items.map((item) => ({
           productoId: item.productoId,
           cantidad: item.cantidad,
         })),
       };
+
+      // Si hay cliente seleccionado, enviamos su ID
+      // El backend cargará automáticamente el snapshot del usuario
+      if (selectedClient) {
+        payload.clienteId = selectedClient.id;
+      }
 
       console.log("Payload enviado:", JSON.stringify(payload, null, 2));
 
@@ -249,49 +249,24 @@ export default function NuevaFacturaPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Columna izquierda: Formulario */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Datos del cliente */}
+          {/* Buscar Cliente */}
           <Card>
             <CardHeader>
-              <CardTitle>Información del Cliente</CardTitle>
+              <CardTitle>Cliente</CardTitle>
               <CardDescription>
-                Opcional. Si no se completa, se asignará como "Cliente General"
+                Busca y selecciona un cliente para la factura (opcional)
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="clienteNombre">Nombre</Label>
-                <Input
-                  id="clienteNombre"
-                  value={clienteNombre}
-                  onChange={(e) => setClienteNombre(e.target.value)}
-                  placeholder="Ej: Juan Pérez"
-                  className="mt-1"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="clienteDocumento">Documento</Label>
-                  <Input
-                    id="clienteDocumento"
-                    value={clienteDocumento}
-                    onChange={(e) => setClienteDocumento(e.target.value)}
-                    placeholder="Ej: 1234567890"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="clienteDireccion">Dirección</Label>
-                  <Input
-                    id="clienteDireccion"
-                    value={clienteDireccion}
-                    onChange={(e) => setClienteDireccion(e.target.value)}
-                    placeholder="Ej: Calle 123 #45-67"
-                    className="mt-1"
-                  />
-                </div>
-              </div>
+            <CardContent>
+              <ClientSearch
+                selectedClient={selectedClient}
+                onClientSelect={setSelectedClient}
+              />
+              {selectedClient && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  El backend cargará automáticamente los datos del cliente al crear la factura
+                </p>
+              )}
             </CardContent>
           </Card>
 
