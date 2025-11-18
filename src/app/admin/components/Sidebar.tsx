@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Grid, Box, Tag, Users, FileText, Settings, ArrowLeft, Warehouse } from "lucide-react";
+import { Home, Grid, Box, Tag, Users, FileText, Settings, ArrowLeft, Warehouse, Package } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +23,7 @@ const items = [
   { id: "productos", label: "Productos", href: "/admin/productos", icon: Box },
   { id: "categorias", label: "Categorías", href: "/admin/categorias", icon: Tag },
   { id: "talleres", label: "Talleres", href: "/admin/talleres", icon: Warehouse },
+  { id: "stock", label: "Stock", href: "/admin/stock", icon: Package },
   { id: "clientes", label: "Clientes", href: "/admin/clientes", icon: Users },
   { id: "facturas", label: "Facturas", href: "/admin/facturas", icon: FileText },
   { id: "configuracion", label: "Configuración", href: "/admin/configuracion", icon: Settings },

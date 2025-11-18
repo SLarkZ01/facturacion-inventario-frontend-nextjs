@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import Image from "next/image"
+import Loader from "@/components/ui/loading"
 
 // ===================================================================
 // COMPONENTE: Editor de Especificaciones Técnicas
@@ -103,6 +104,7 @@ type FormValues = {
   nombre: string
   descripcion: string
   precio: string
+  tasaIva: string
   stock: string
   tallerId: string
   categoriaId: string
@@ -135,6 +137,7 @@ export default function NuevoProductoPage() {
     nombre: "",
     descripcion: "",
     precio: "",
+    tasaIva: "",
     stock: "",
     tallerId: tallerIdParam || "",
     categoriaId: "",
@@ -336,6 +339,7 @@ export default function NuevoProductoPage() {
         nombre: values.nombre,
         descripcion: values.descripcion || undefined,
         precio: values.precio ? Number(values.precio) : undefined,
+        tasaIva: values.tasaIva ? Number(values.tasaIva) : undefined,
         stock: values.stock ? Number(values.stock) : undefined,
         tallerId: values.tallerId, // IMPORTANTE: Asocia producto a taller
         categoriaId: values.categoriaId || undefined,
@@ -486,6 +490,20 @@ export default function NuevoProductoPage() {
                   placeholder="0.00"
                 />
                 {errors.precio && <p className="text-sm text-destructive mt-1">{errors.precio}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor="tasaIva">Tasa IVA (%)</Label>
+                <Input
+                  id="tasaIva"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  className="h-11"
+                  value={values.tasaIva}
+                  onChange={(e) => setValues({ ...values, tasaIva: e.target.value })}
+                  placeholder="21"
+                />
               </div>
 
               <div>

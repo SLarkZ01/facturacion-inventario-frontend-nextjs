@@ -27,7 +27,7 @@ export async function obtenerStockPorProductoService(productoId: string, accessT
   const headers: Record<string, string> = {};
   if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
 
-  const res = await fetch(`${BACKEND_BASE}/api/stock?productoId=${productoId}`, {
+  const res = await fetch(`${BACKEND_BASE}/api/stock/${productoId}`, {
     method: "GET",
     headers,
   });
