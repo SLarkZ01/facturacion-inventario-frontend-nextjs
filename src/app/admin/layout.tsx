@@ -1,5 +1,7 @@
 import AppSidebar from "./components/Sidebar";
 import Navbar from "@/components/Navbar";
+import Link from "next/link";
+import Image from "next/image";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { meWithAutoRefresh } from "@/lib/server/authServer";
@@ -53,13 +55,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <SidebarProvider>
       <AppSidebar user={userData as any} />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white">
+        <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2 px-4 bg-white/60 backdrop-blur-sm border-t border-b-2 border-white/20 shadow-sm">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbPage className="font-semibold">Panel de Administración</BreadcrumbPage>
+                <BreadcrumbPage className="font-semibold">
+                  <Link href="/" className="flex items-center gap-3">
+                    <Image src="/images/ermotoshd.webp" alt="ERMOTOS" width={56} height={56} className="rounded-md object-cover" />
+                    <span className="text-lg sm:text-xl font-extrabold text-[var(--primary)]">ERMOTOS</span>
+                  </Link>
+                </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>

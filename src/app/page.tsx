@@ -3,6 +3,7 @@ import Link from "next/link";
 import { meService } from "@/lib/server/authServer";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import AuthActions from "@/components/landing/AuthActions";
+import Navbar from "@/components/Navbar";
 
 export default async function LandingPage() {
   // Leer cookie de access token y verificar con backend si el usuario está autenticado
@@ -33,6 +34,7 @@ export default async function LandingPage() {
 
   return (
     <main className="min-h-screen">
+      <Navbar userName={userName} showSidebarTrigger={false} />
       {/* Hero Section centrado sin logo */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[var(--background)] via-white to-[var(--background)] min-h-[60vh] sm:min-h-[70vh] flex items-center">
         {/* Decorative background elements */}
