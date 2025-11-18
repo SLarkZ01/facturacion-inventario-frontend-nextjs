@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { DeleteBorradorButton } from "./components/DeleteBorradorButton";
 
 /**
  * Función para obtener todas las facturas
@@ -29,12 +30,24 @@ async function getFacturasData() {
 
   if (result.status === 200) {
     // Extraer datos correctamente (el backend puede envolver la respuesta)
+    let facturas: any[] = [];
+    
     if (Array.isArray(result.body)) {
-      return { facturas: result.body as Factura[] };
+      facturas = result.body;
+    } else if (result.body && typeof result.body === "object" && "facturas" in result.body) {
+      facturas = (result.body as any).facturas;
     }
-    if (result.body && typeof result.body === "object" && "facturas" in result.body) {
-      return { facturas: (result.body as any).facturas as Factura[] };
-    }
+
+    // Mapear _id a id si es necesario
+    const facturasConId = facturas.map((factura) => ({
+      ...factura,
+      id: factura.id || factura._id,
+    }));
+
+    console.log("📊 Total de facturas recibidas:", facturasConId.length);
+    console.log("📋 Facturas:", facturasConId.map(f => ({ id: f.id, numero: f.numeroFactura, estado: f.estado })));
+
+    return { facturas: facturasConId as Factura[] };
   }
 
   return { facturas: [] };
@@ -236,6 +249,12 @@ export default async function FacturasPage() {
                                 <Download className="w-4 h-4" />
                               </Button>
                             </a>
+                          )}
+                          {factura.estado === "BORRADOR" && (
+                            <DeleteBorradorButton
+                              facturaId={factura.id}
+                              numeroFactura={factura.numeroFactura}
+                            />
                           )}
                         </div>
                       </TableCell>

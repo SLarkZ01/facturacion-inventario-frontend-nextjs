@@ -88,6 +88,10 @@ export async function listarFacturasService(
 
   const queryParams = new URLSearchParams();
   if (params?.userId) queryParams.append("userId", params.userId);
+  
+  // Agregar parámetros de paginación para obtener todas las facturas
+  queryParams.append("size", "100"); // O un número alto suficiente
+  queryParams.append("page", "0");
 
   const queryString = queryParams.toString();
   const url = `${BACKEND_BASE}/api/facturas${queryString ? `?${queryString}` : ""}`;
@@ -268,6 +272,32 @@ export async function anularFacturaService(id: string, accessToken?: string) {
   try {
     const json = text ? JSON.parse(text) : null;
     return { status: res.status, body: json as Factura };
+  } catch {
+    return { status: res.status, body: text };
+  }
+}
+
+/**
+ * Elimina una factura en estado BORRADOR
+ * Solo se pueden eliminar facturas en estado BORRADOR
+ */
+export async function eliminarBorradorService(id: string, accessToken?: string) {
+  const headers: Record<string, string> = {};
+  if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+  const url = `${BACKEND_BASE}/api/facturas/${id}`;
+
+  const res = await fetch(url, {
+    method: "DELETE",
+    headers,
+    cache: "no-store",
+  });
+
+  const text = await res.text();
+
+  try {
+    const json = text ? JSON.parse(text) : null;
+    return { status: res.status, body: json };
   } catch {
     return { status: res.status, body: text };
   }
