@@ -65,6 +65,11 @@ export type Factura = {
   total: number;
   realizadoPor?: string;
   estado: "BORRADOR" | "EMITIDA" | "ANULADA";
+  emitidaEn?: string; // Campo del backend
+  anuladaEn?: string; // Campo del backend
+  creadoEn?: string;  // Campo del backend
+  modificadoEn?: string; // Campo del backend
+  // Aliases para compatibilidad
   fechaEmision?: string;
   fechaAnulacion?: string;
   createdAt?: string;

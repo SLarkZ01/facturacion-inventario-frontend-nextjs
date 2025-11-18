@@ -87,8 +87,8 @@ export default async function FacturasPage() {
 
   // Ordenar facturas por fecha (más recientes primero)
   const facturasOrdenadas = [...facturas].sort((a, b) => {
-    const dateA = new Date(a.createdAt || "");
-    const dateB = new Date(b.createdAt || "");
+    const dateA = new Date(a.creadoEn || a.createdAt || "");
+    const dateB = new Date(b.creadoEn || b.createdAt || "");
     return dateB.getTime() - dateA.getTime();
   });
 
@@ -210,7 +210,7 @@ export default async function FacturasPage() {
                       <TableCell>
                         {factura.cliente?.nombre || "Cliente General"}
                       </TableCell>
-                      <TableCell>{formatDate(factura.fechaEmision || factura.createdAt)}</TableCell>
+                      <TableCell>{formatDate(factura.emitidaEn || factura.fechaEmision || factura.creadoEn || factura.createdAt)}</TableCell>
                       <TableCell className="text-right">
                         {formatCurrency(factura.subtotal || 0)}
                       </TableCell>

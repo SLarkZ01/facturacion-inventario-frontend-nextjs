@@ -69,13 +69,17 @@ function formatCurrency(value: number): string {
  */
 function formatDate(date: string | undefined): string {
   if (!date) return "N/A";
-  return new Date(date).toLocaleString("es-CO", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  try {
+    return new Date(date).toLocaleString("es-CO", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "N/A";
+  }
 }
 
 export default function FacturaDetallePage() {
@@ -210,7 +214,7 @@ export default function FacturaDetallePage() {
           <div>
             <h1 className="text-2xl font-bold">Factura {factura.numeroFactura}</h1>
             <p className="text-sm text-muted-foreground">
-              Creada el {formatDate(factura.createdAt)}
+              Creada el {formatDate(factura.creadoEn || factura.createdAt)}
             </p>
           </div>
         </div>
